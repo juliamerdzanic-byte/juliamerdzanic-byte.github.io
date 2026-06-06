@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Marie Tracker v2 – vollständiger Code zum Download -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -29,10 +28,11 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--tx);f
 .qg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
 .qb{background:var(--s);border:1.5px solid var(--bd);border-radius:12px;padding:12px 6px;cursor:pointer;text-align:center;font-family:sans-serif}
 .qb:active{opacity:.65}
-.qb.s{border-color:var(--a2)}.qb.w{border-color:var(--gn)}.qb.f{border-color:var(--a)}.qb.b{border-color:var(--a3)}
+.qb.s{border-color:var(--a2)}.qb.w{border-color:var(--gn)}.qb.f{border-color:var(--a)}.qb.b{border-color:var(--a3)}.qb.r{border-color:var(--rd)}
 .le{background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .le-b{flex:1;min-width:0}.le-t{font-size:13px;font-weight:500}.le-m{font-size:11px;color:var(--mu);margin-top:1px}
-.del{background:none;border:none;color:var(--mu);font-size:16px;cursor:pointer;padding:1px 4px}
+.le-acts{display:flex;align-items:center;gap:2px;flex-shrink:0}
+.icon-btn{background:none;border:none;color:var(--mu);font-size:14px;cursor:pointer;padding:2px 5px}
 .ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:100;align-items:flex-end}
 .ovl.open{display:flex}
 .mdl{background:var(--s);border-radius:16px 16px 0 0;padding:16px 14px calc(22px + env(safe-area-inset-bottom,0px));width:100%;border-top:1px solid var(--bd);max-height:90dvh;overflow-y:auto}
@@ -66,32 +66,25 @@ body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--tx);f
 .slbl{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mu);margin-bottom:6px;margin-top:2px}
 .emp{text-align:center;padding:24px 10px;color:var(--mu);font-size:13px}
 .dngr{width:100%;padding:11px;background:rgba(240,112,112,.07);border:1px solid var(--rd);border-radius:10px;font-size:13px;font-family:sans-serif;color:var(--rd);cursor:pointer;margin-top:6px}
+/* tabs */
+.tabs{display:flex;gap:5px;margin-bottom:10px}
+.tab{flex:1;padding:8px 4px;background:var(--s);border:1px solid var(--bd);border-radius:9px;color:var(--mu);font-size:12px;font-weight:600;font-family:sans-serif;cursor:pointer;text-align:center}
+.tab.on{background:var(--s2);border-color:var(--a);color:var(--a)}
+/* charts */
+.chart-wrap{overflow-x:auto;padding-bottom:4px}
+.chart{display:flex;gap:4px;align-items:flex-end;height:80px;min-width:100%}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:28px}
+.bar-col-f{border-radius:3px 3px 0 0;min-height:3px;transition:height .3s}
+.bar-col-l{font-size:9px;color:var(--mu)}
+/* brei step */
+.brei-step{background:var(--s2);border:1px solid var(--a3);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.brei-step-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.brei-step-name{font-size:13px;font-weight:600;color:var(--a3)}
+.brei-step-kcal{font-size:11px;color:var(--gn)}
 input[type=file]{display:none}
-
-/* ── SYNC SETUP SCREEN ── */
-#setup-screen{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
-#setup-screen h2{font-size:20px;margin-bottom:8px}
-#setup-screen p{font-size:13px;color:var(--mu);margin-bottom:20px;line-height:1.6}
-#setup-screen input{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px;color:var(--tx);font-size:15px;font-family:sans-serif;margin-bottom:12px;-webkit-appearance:none;text-align:center}
-#setup-screen .save-btn{font-size:14px}
-#setup-screen .skip{font-size:12px;color:var(--mu);margin-top:10px;cursor:pointer;text-decoration:underline}
 </style>
 </head>
 <body>
-
-<!-- SYNC SETUP (first run) -->
-<div id="setup-screen" style="display:none">
-  <div style="font-size:40px;margin-bottom:12px">🔄</div>
-  <h2>Sync einrichten</h2>
-  <p>Damit beide Eltern dieselben Daten sehen, braucht ihr einen gemeinsamen JSONBin-API-Key.<br><br>
-  1. Geht auf <b>jsonbin.io</b> → kostenlosen Account erstellen<br>
-  2. Unter "API Keys" einen Key kopieren<br>
-  3. Hier einfügen (einmalig auf beiden Geräten)</p>
-  <input type="text" id="api-key-input" placeholder="API Key (X-Master-Key)">
-  <input type="text" id="bin-id-input" placeholder="Bin ID (nach erstem Speichern)">
-  <button class="save-btn" onclick="setupSync()">Speichern & starten</button>
-  <div class="skip" onclick="skipSync()">Ohne Sync starten (nur lokal)</div>
-</div>
 
 <div class="hdr">
   <h1>Marie <em>✦</em></h1>
@@ -121,21 +114,15 @@ input[type=file]{display:none}
     <div class="bar"><div class="bar-f" id="tk-bar" style="width:0"></div></div>
     <div style="font-size:11px;color:var(--mu)" id="tk-lbl">–</div>
   </div>
-  <div class="c">
-    <div class="cl">Schlaffenster</div>
-    <div id="wins" style="display:flex;gap:5px"></div>
-  </div>
-  <div class="c">
-    <div class="cl">Tipps für heute Nacht</div>
-    <div id="adv" style="font-size:12px;line-height:1.65">–</div>
-  </div>
+  <div class="c"><div class="cl">Schlaffenster</div><div id="wins" style="display:flex;gap:5px"></div></div>
+  <div class="c"><div class="cl">Tipps</div><div id="adv" style="font-size:12px;line-height:1.65">–</div></div>
   <div class="slbl">Eintragen</div>
   <div class="qg">
     <button class="qb s" onclick="om('sleep')"><div style="font-size:20px">😴</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Schläft</div><div style="font-size:10px;color:var(--mu)">Einschlafdauer</div></button>
     <button class="qb w" onclick="om('wake')"><div style="font-size:20px">☀️</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Wacht auf</div><div style="font-size:10px;color:var(--mu)">Uhrzeit</div></button>
     <button class="qb f" onclick="om('feed')"><div style="font-size:20px">🤱</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Stillen</div><div style="font-size:10px;color:var(--mu)">Dauer & Qualität</div></button>
     <button class="qb b" onclick="om('brei')"><div style="font-size:20px">🍚</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Brei</div><div style="font-size:10px;color:var(--mu)">Zutaten & kcal</div></button>
-    <button class="qb" style="border-color:var(--rd)" onclick="om('reaktion')"><div style="font-size:20px">⚠️</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Reaktion</div><div style="font-size:10px;color:var(--mu)">Nach Mahlzeit</div></button>
+    <button class="qb r" onclick="om('reaktion')" style="grid-column:span 2"><div style="font-size:20px">⚠️</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Reaktion nach Mahlzeit</div></button>
   </div>
   <div class="slbl">Heute</div>
   <div id="today-log"><div class="emp">📋 Noch nichts eingetragen.</div></div>
@@ -144,7 +131,14 @@ input[type=file]{display:none}
 <div class="pg" id="p-hist">
   <div style="height:8px"></div>
   <div style="font-size:18px;font-weight:600;margin-bottom:8px">Verlauf</div>
-  <div id="hist-list"></div>
+  <div class="tabs">
+    <button class="tab on" id="ht-essen" onclick="histTab('essen')">🍚 Essen</button>
+    <button class="tab" id="ht-schlaf" onclick="histTab('schlaf')">😴 Schlaf</button>
+    <button class="tab" id="ht-reaktion" onclick="histTab('reaktion')">⚠️ Reaktionen</button>
+  </div>
+  <div id="hist-essen"></div>
+  <div id="hist-schlaf" style="display:none"></div>
+  <div id="hist-reaktion" style="display:none"></div>
 </div>
 
 <div class="pg" id="p-sets">
@@ -164,15 +158,12 @@ input[type=file]{display:none}
   <div class="srow"><div style="font-size:13px;font-weight:500">Gewicht (kg)</div><input type="number" id="s-wgt" step="0.1" onchange="sv()"></div>
   <div class="srow"><div><div style="font-size:13px;font-weight:500">Krabbelphase</div><div style="font-size:10px;color:var(--mu)">+15% Kalorien</div></div><label class="tog"><input type="checkbox" id="s-schub" onchange="sv()"><span class="togs"></span></label></div>
   <div class="srow"><div style="font-size:13px;font-weight:500">Schub-Start</div><input type="date" id="s-sd" onchange="sv()"></div>
-  <div class="slbl" style="margin-top:8px">Sync</div>
-  <div class="srow"><div><div style="font-size:13px;font-weight:500">JSONBin API-Key</div><div style="font-size:10px;color:var(--mu)" id="sync-status">Nicht eingerichtet</div></div><button onclick="showSetup()" style="background:var(--s2);border:1px solid var(--bd);border-radius:7px;color:var(--a2);font-size:11px;font-family:sans-serif;padding:5px 10px;cursor:pointer">Einrichten</button></div>
   <div class="slbl" style="margin-top:8px">Daten</div>
   <button class="save-btn" style="background:var(--gn);color:#0d1117" onclick="exportD()">📤 Exportieren</button>
   <input type="file" id="imp-f" accept=".json" onchange="importD(this)">
   <button class="dngr" onclick="doReset()">🗑 Alle Daten löschen</button>
 </div>
 
-<!-- MODAL -->
 <div class="ovl" id="ovl">
   <div class="mdl">
     <h2 id="m-tit">–</h2>
@@ -197,60 +188,50 @@ input[type=file]{display:none}
 
 <script>
 'use strict';
-// ── FOOD DB ─────────────────────────────────────────────────────
-var WÜRFEL_G=36; // 3.2×3.2×3.5cm ≈ 36g
-var TL_G=5; // Teelöffel ≈ 5g
+// ── HARDCODED SYNC (kein Setup nötig) ───────────────────────────
+var apiKey='$2a$10$KZBr.D5jDGNyvtidlGKMH.AutUE5ZcbyYvJfJdh3KF4YbcPuMlm4m';
+var binId='6a23e7dcda38895dfe9046c6';
+
+// ── FOOD DB ──────────────────────────────────────────────────────
+var WÜRFEL_G=36,TL_G=5;
 var Z={
-  // Basis
-  hafer:{l:'Hafer 🌾',k:370,c:'b'},hirse:{l:'Hirse 🌾',k:356,c:'b'},dinkel:{l:'Dinkel',k:337,c:'b'},reis:{l:'Reis 🍚',k:349,c:'b'},gries:{l:'Grieß',k:340,c:'b'},linsen:{l:'Linsen 🫘',k:116,c:'b'},
-  // Gemüse
-  karotte:{l:'Karotte 🥕',k:41,c:'g'},sukar:{l:'Süßkartoffel 🍠',k:86,c:'g'},kartoffel:{l:'Kartoffel 🥔',k:77,c:'g'},kuerbis:{l:'Kürbis 🎃',k:27,c:'g'},blumenkohl:{l:'Blumenkohl',k:25,c:'g'},fenchel:{l:'Fenchel',k:31,c:'g'},spinat:{l:'Spinat 🌿',k:23,c:'g'},zucchini:{l:'Zucchini 🥒',k:17,c:'g'},brokkoli:{l:'Brokkoli 🥦',k:34,c:'g'},erbsen:{l:'Erbsen 🫛',k:81,c:'g'},pastinake:{l:'Pastinake',k:75,c:'g'},
-  // Obst
-  beeren:{l:'Gem. Beeren 🫐',k:45,c:'o'},apfelmus:{l:'Apfelmus 🍎',k:50,c:'o'},mango:{l:'Apfelmark Mango 🥭',k:55,c:'o'},johannis:{l:'Apfelmark Joh./Him.',k:48,c:'o'},erdbeere:{l:'Erdbeere 🍓',k:32,c:'o'},banane:{l:'Banane 🍌',k:89,c:'o'},birne:{l:'Birne 🍐',k:57,c:'o'},
-  // Protein
-  huehn:{l:'Hühnchen 🍗',k:165,c:'p'},rind:{l:'Rind 🥩',k:155,c:'p'},lachs:{l:'Lachs 🐟',k:208,c:'p'},
+  hafer:{l:'Hafer 🌾',k:370,c:'b'},hirse:{l:'Hirse 🌾',k:356,c:'b'},dinkel:{l:'Dinkel',k:337,c:'b'},
+  reis:{l:'Reis 🍚',k:349,c:'b'},gries:{l:'Grieß',k:340,c:'b'},linsen:{l:'Linsen 🫘',k:116,c:'b'},
+  karotte:{l:'Karotte 🥕',k:41,c:'g'},sukar:{l:'Süßkartoffel 🍠',k:86,c:'g'},
+  kartoffel:{l:'Kartoffel 🥔',k:77,c:'g'},kuerbis:{l:'Kürbis 🎃',k:27,c:'g'},
+  blumenkohl:{l:'Blumenkohl',k:25,c:'g'},fenchel:{l:'Fenchel',k:31,c:'g'},
+  spinat:{l:'Spinat 🌿',k:23,c:'g'},zucchini:{l:'Zucchini 🥒',k:17,c:'g'},
+  brokkoli:{l:'Brokkoli 🥦',k:34,c:'g'},erbsen:{l:'Erbsen 🫛',k:81,c:'g'},
+  pastinake:{l:'Pastinake',k:75,c:'g'},
+  beeren:{l:'Gem. Beeren 🫐',k:45,c:'o'},apfelmus:{l:'Apfelmus 🍎',k:50,c:'o'},
+  mango:{l:'Apfelmark Mango 🥭',k:55,c:'o'},johannis:{l:'Apfelmark Joh./Him.',k:48,c:'o'},
+  erdbeere:{l:'Erdbeere 🍓',k:32,c:'o'},banane:{l:'Banane 🍌',k:89,c:'o'},birne:{l:'Birne 🍐',k:57,c:'o'},
+  huehn:{l:'Hühnchen 🍗',k:165,c:'p'},rind:{l:'Rind 🥩',k:155,c:'p'},
+  lachs:{l:'Lachs 🐟',k:208,c:'p'}
 };
 var TOPPINGS={
-  mandelw:{l:'Mandelmus weiß',k:620},mandelbr:{l:'Mandelmus braun',k:600},erdnuss:{l:'Erdnussmus',k:588},rapsoel:{l:'Rapsöl',k:900}
+  mandelw:{l:'Mandelmus weiß',k:620},mandelbr:{l:'Mandelmus braun',k:600},
+  erdnuss:{l:'Erdnussmus',k:588},rapsoel:{l:'Rapsöl',k:900}
 };
-var O={none:{l:'Kein Öl',k:0},raps:{l:'Rapsöl',k:900},lein:{l:'Leinöl',k:900},oliven:{l:'Olivenöl',k:900},kokos:{l:'Kokosöl',k:862},butter:{l:'Butter',k:741}};
 var CL={b:'Basis',g:'Gemüse',o:'Obst',p:'Protein'};
-var EINHEIT_OPTS=['Würfel','½ Würfel','2 Würfel','3 Würfel','1 TL','2 TL','3 TL'];
-var REAKTIONEN=['Kein Auffälligkeit','Leichter Ausschlag','Starker Ausschlag','Erbrechen','Quaddeln','Anaphylaxie ⚠️','Sonstiges'];
-// Custom Zutaten aus localStorage
+var EINHEIT_OPTS=['1 Würfel','½ Würfel','2 Würfel','3 Würfel','1 TL','2 TL','3 TL'];
+var REAKTIONEN=['Keine Auffälligkeit','Leichter Ausschlag','Starker Ausschlag','Erbrechen','Quaddeln','Anaphylaxie ⚠️','Sonstiges'];
+var ICOS={sleep:'😴',wake:'☀️',feed:'🤱',brei:'🍚',reaktion:'⚠️'};
+var LBLS={sleep:'Eingeschlafen',wake:'Aufgewacht',feed:'Gestillt',brei:'Brei',reaktion:'Reaktion'};
+var DF={w1:'06:00',w2:'08:00',ww1:90,n1:110,ww2:90,n2:40,eww:120,bed:'19:30',wgt:8.7,schub:true,sd:''};
+
+var E=[],S=Object.assign({},DF),mT=null,mSq='gut',mEsd=null,selZ={},selT={},selReak='Keine Auffälligkeit',reaktSchwere=1,editId=null;
 var customZ={};
 try{customZ=JSON.parse(localStorage.getItem('mv-cz')||'{}');}catch(e){}
 function allZ(){return Object.assign({},Z,customZ);}
-var ICOS={sleep:'😴',wake:'☀️',feed:'🤱',brei:'🍚',reaktion:'⚠️'};
-var LBLS={sleep:'Eingeschlafen',wake:'Aufgewacht',feed:'Gestillt',brei:'Brei',reaktion:'Reaktion'};
-var BIRTH=new Date('2025-09-16');
-var DF={w1:'06:00',w2:'08:00',ww1:90,n1:110,ww2:90,n2:40,eww:120,bed:'19:30',wgt:8.7,schub:true,sd:''};
 
-// ── STATE ────────────────────────────────────────────────────────
-var E=[],S=Object.assign({},DF),mT=null,mSq='gut',mEsd=null,selZ={},selO='raps',brG=150;
-var apiKey='',binId='';
-
-// ── LOCAL STORAGE ────────────────────────────────────────────────
-function lsLoad(){
-  try{E=JSON.parse(localStorage.getItem('mv-e')||'[]');}catch(e){E=[];}
-  try{var s=JSON.parse(localStorage.getItem('mv-s'));if(s)S=Object.assign({},DF,s);}catch(e){}
-  apiKey=localStorage.getItem('mv-apikey')||'';
-  binId=localStorage.getItem('mv-binid')||'';
-}
-function lsSave(){
-  try{localStorage.setItem('mv-e',JSON.stringify(E));}catch(e){}
-  try{localStorage.setItem('mv-s',JSON.stringify(S));}catch(e){}
-}
-
-// ── JSONBIN SYNC ─────────────────────────────────────────────────
+// ── SYNC ─────────────────────────────────────────────────────────
 function setDot(c){var d=document.getElementById('sdot');if(d)d.className='dot '+c;}
 function syncPush(){
   if(!apiKey||!binId){setDot('');return;}
   setDot('busy');
-  var url='https://api.jsonbin.io/v3/b/'+binId;
-  fetch(url,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':apiKey,'X-Bin-Versioning':'false'},body:JSON.stringify({E:E,S:S,ts:Date.now()})})
-    .then(function(r){return r.ok?setDot('ok'):setDot('err');})
-    .catch(function(){setDot('err');});
+  fetch('https://api.jsonbin.io/v3/b/'+binId,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':apiKey,'X-Bin-Versioning':'false'},body:JSON.stringify({E:E,S:S,ts:Date.now()})})
+    .then(function(r){setDot(r.ok?'ok':'err');}).catch(function(){setDot('err');});
 }
 function syncPull(){
   if(!apiKey||!binId)return;
@@ -260,72 +241,45 @@ function syncPull(){
       var rec=d.record;if(!rec||!rec.E)return;
       var lm={};E.forEach(function(e){lm[e.id]=e;});
       var rm={};rec.E.forEach(function(e){rm[e.id]=e;});
-      var merged=Object.values(Object.assign({},lm,rm)).sort(function(a,b){return (a.date+a.time).localeCompare(b.date+b.time);});
-      E=merged;
+      E=Object.values(Object.assign({},lm,rm)).sort(function(a,b){return(a.date+a.time).localeCompare(b.date+b.time);});
       if(rec.S)S=Object.assign({},DF,rec.S);
       lsSave();iS();ra();setDot('ok');
     }).catch(function(){setDot('err');});
 }
-function createBin(){
-  if(!apiKey)return;
-  setDot('busy');
-  fetch('https://api.jsonbin.io/v3/b',{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':apiKey,'X-Bin-Name':'marie-tracker','X-Public-Bin':'false'},body:JSON.stringify({E:E,S:S,ts:Date.now()})})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      binId=d.metadata.id;
-      localStorage.setItem('mv-binid',binId);
-      document.getElementById('bin-id-input').value=binId;
-      setDot('ok');toast('Bin erstellt: '+binId);
-    }).catch(function(){setDot('err');toast('Fehler beim Erstellen');});
-}
-function setupSync(){
-  var k=document.getElementById('api-key-input').value.trim();
-  var b=document.getElementById('bin-id-input').value.trim();
-  if(!k){toast('API-Key fehlt');return;}
-  apiKey=k;localStorage.setItem('mv-apikey',k);
-  if(b){binId=b;localStorage.setItem('mv-binid',b);hideSetup();syncPull();}
-  else{createBin();hideSetup();}
-}
-function skipSync(){hideSetup();}
-function showSetup(){document.getElementById('setup-screen').style.display='flex';}
-function hideSetup(){document.getElementById('setup-screen').style.display='none';}
 
-// ── UTILS ────────────────────────────────────────────────────────
+// ── LOCAL STORAGE ─────────────────────────────────────────────────
+function lsLoad(){
+  try{E=JSON.parse(localStorage.getItem('mv-e')||'[]');}catch(e){E=[];}
+  try{var s=JSON.parse(localStorage.getItem('mv-s'));if(s)S=Object.assign({},DF,s);}catch(e){}
+}
+function lsSave(){
+  try{localStorage.setItem('mv-e',JSON.stringify(E));}catch(e){}
+  try{localStorage.setItem('mv-s',JSON.stringify(S));}catch(e){}
+}
+function saveAll(){lsSave();syncPush();}
+
+// ── UTILS ─────────────────────────────────────────────────────────
 function g(id){return document.getElementById(id);}
 function td(){return new Date().toISOString().slice(0,10);}
 function nm(){return new Date().getHours()*60+new Date().getMinutes();}
 function mfs(s){if(!s)return 0;var p=s.split(':').map(Number);return p[0]*60+p[1];}
 function sfm(m){m=((m%1440)+1440)%1440;return('0'+Math.floor(m/60)).slice(-2)+':'+('0'+(m%60)).slice(-2);}
 function aM(t,x){return sfm(mfs(t)+x);}
-function ageW(){return Math.floor((Date.now()-BIRTH.getTime())/(7*24*3600*1000));}
+function ageW(){return Math.floor((Date.now()-new Date('2025-09-16').getTime())/(7*24*3600*1000));}
 function schF(){if(!S.schub||!S.sd)return 1;var d=Math.floor((Date.now()-new Date(S.sd).getTime())/(24*3600*1000));return d<0||d>42?1:d<=14?1.15:d<=28?1.1:1.05;}
 function needs(){return Math.round(S.wgt*83*schF());}
+function einheitToG(u){if(u==='½ Würfel')return WÜRFEL_G/2;if(u==='2 Würfel')return WÜRFEL_G*2;if(u==='3 Würfel')return WÜRFEL_G*3;if(u==='1 TL')return TL_G;if(u==='2 TL')return TL_G*2;if(u==='3 TL')return TL_G*3;return WÜRFEL_G;}
 
-// ── CALORIES ─────────────────────────────────────────────────────
-function einheitToG(einheit){
-  if(einheit==='½ Würfel')return WÜRFEL_G/2;
-  if(einheit==='2 Würfel')return WÜRFEL_G*2;
-  if(einheit==='3 Würfel')return WÜRFEL_G*3;
-  if(einheit==='1 TL')return TL_G;
-  if(einheit==='2 TL')return TL_G*2;
-  if(einheit==='3 TL')return TL_G*3;
-  return WÜRFEL_G; // 1 Würfel default
-}
-function brKcal(selMap,toppings,oelKey){
+// ── CALORIES ──────────────────────────────────────────────────────
+function brKcal(selMap,tops){
   var az=allZ(),k=0;
-  Object.keys(selMap).forEach(function(key){
-    var gr=einheitToG(selMap[key]);
-    k+=(az[key]?az[key].k:0)*gr/100;
-  });
-  Object.keys(toppings||{}).forEach(function(key){
-    var gr=einheitToG(toppings[key]);
-    k+=(TOPPINGS[key]?TOPPINGS[key].k:0)*gr/100;
-  });
+  Object.keys(selMap||{}).forEach(function(key){k+=(az[key]?az[key].k:0)*einheitToG(selMap[key])/100;});
+  Object.keys(tops||{}).forEach(function(key){k+=(TOPPINGS[key]?TOPPINGS[key].k:0)*einheitToG(tops[key])/100;});
   return Math.round(k);
 }
 function eKcal(e){
   if(e.type==='feed'){var q=e.sq==='gut'?1:e.sq==='mittel'?.7:.4;return(e.dur||10)*7*0.65*q;}
-  if(e.type==='brei'){if(e.zutaten&&Object.keys(e.zutaten).length)return brKcal(e.zutaten,e.oelKey,e.breiG||150);return(e.breiG||150)*0.75;}
+  if(e.type==='brei'){if(e.zutaten&&Object.keys(e.zutaten).length)return brKcal(e.zutaten,e.toppings);return(e.breiG||150)*0.75;}
   return 0;
 }
 function intake(date){
@@ -368,11 +322,12 @@ function calcWins(){
   var lw=wk.filter(function(e){return mfs(e.time)>=720&&mfs(e.time)<=1080;});
   var bed=lw.length?sfm(mfs(lw[lw.length-1].time)+S.eww):aM(n2e,S.eww);
   bed=sfm(Math.max(1110,Math.min(1290,mfs(bed))));
-  return [{l:'Mittag',s:n1t,e:n1e},{l:'Nachm.',s:n2t,e:n2e},{l:'Nacht',s:bed,e:aM(bed,25)}];
+  return[{l:'Mittag',s:n1t,e:n1e},{l:'Nachm.',s:n2t,e:n2e},{l:'Nacht',s:bed,e:aM(bed,25)}];
 }
 
-// ── RENDER ───────────────────────────────────────────────────────
-function ra(){
+// ── RENDER HOME ───────────────────────────────────────────────────
+function ra(){rHome();rHist();}
+function rHome(){
   var w=ageW(),mo=Math.floor(w/4.33);
   g('agebdg').textContent=mo+'M '+Math.round(w-mo*4.33)+'W';
   var sc=score(),nd=needs(),it=intake(),ev=calcEve(),n=nm();
@@ -388,7 +343,7 @@ function ra(){
   g('wins').innerHTML=ws.map(function(w){
     var sm=mfs(w.s),em=mfs(w.e),cl=n>em+15?'past':n>=sm-12&&n<=em+15?'now':'next';
     var st=cl==='now'?'border-left:3px solid var(--a)':cl==='next'?'border-left:3px solid var(--a2)':'opacity:.4';
-    return '<div style="flex:1;background:var(--s2);border-radius:8px;padding:8px 6px;'+st+'"><div style="font-size:9px;color:var(--mu)">'+w.l+'</div><div style="font-size:14px;font-weight:700">'+w.s+'</div><div style="font-size:10px;color:var(--mu)">–'+w.e+'</div></div>';
+    return'<div style="flex:1;background:var(--s2);border-radius:8px;padding:8px 6px;'+st+'"><div style="font-size:9px;color:var(--mu)">'+w.l+'</div><div style="font-size:14px;font-weight:700">'+w.s+'</div><div style="font-size:10px;color:var(--mu)">–'+w.e+'</div></div>';
   }).join('');
   var nxt=ws.find(function(w){return mfs(w.s)>n+5;}),inW=ws.find(function(w){return n>=mfs(w.s)-12&&n<=mfs(w.e)+15;});
   if(inW){g('na-m').textContent=inW.l+' – JETZT offen';g('na-s').textContent='Ritual beginnen!';}
@@ -401,174 +356,220 @@ function ra(){
   if(it.tot<nd*.72)tips.push('⚠️ Erst '+Math.round(it.tot)+'/'+nd+' kcal.');
   if(sc>=70)tips.push('✅ Gut gesättigt!');
   g('adv').innerHTML=tips.join('<br>')||'Mehr Einträge für präzise Tipps.';
-  // log
   var today=E.filter(function(e){return e.date===td();}).sort(function(a,b){return b.time.localeCompare(a.time);});
   g('today-log').innerHTML=today.length?today.map(eHtml).join(''):'<div class="emp">📋 Noch nichts eingetragen.</div>';
-  // hist
-  var hl=g('hist-list');
-  var byD={};E.slice().sort(function(a,b){return(b.date+b.time).localeCompare(a.date+a.time);}).forEach(function(e){if(!byD[e.date])byD[e.date]=[];byD[e.date].push(e);});
-  var keys=Object.keys(byD);
-  hl.innerHTML=keys.length?keys.map(function(date){
-    var lbl=new Date(date+'T12:00:00').toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'});
-    var hs=score(date),hcol=hs>=65?'var(--gn)':hs>=38?'var(--a)':'var(--rd)';
-    return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><b>'+lbl+'</b><span style="font-size:11px;color:'+hcol+';font-weight:600">Hunger: '+hs+'%</span></div>'+byD[date].map(eHtml).join('')+'</div>';
-  }).join(''):'<div class="emp">📭 Noch keine Daten.</div>';
-  // sync status
-  var ss=g('sync-status');if(ss)ss.textContent=apiKey?(binId?'Aktiv (Bin: '+binId.slice(-6)+'…)':'Kein Bin'):'Nicht eingerichtet';
 }
+
+// ── RENDER HISTORY ────────────────────────────────────────────────
+var histTabActive='essen';
+function histTab(t){
+  histTabActive=t;
+  ['essen','schlaf','reaktion'].forEach(function(x){
+    g('ht-'+x).className='tab'+(x===t?' on':'');
+    g('hist-'+x).style.display=x===t?'block':'none';
+  });
+  rHist();
+}
+function rHist(){
+  // ── ESSEN ──
+  var essenE=E.filter(function(e){return e.type==='feed'||e.type==='brei';});
+  var byD={};essenE.sort(function(a,b){return(b.date+b.time).localeCompare(a.date+a.time);}).forEach(function(e){(byD[e.date]=byD[e.date]||[]).push(e);});
+  // Kalorienchart letzte 7 Tage
+  var days7=[];for(var i=6;i>=0;i--){var d=new Date(Date.now()-i*24*3600*1000);days7.push(d.toISOString().slice(0,10));}
+  var maxKcal=needs()*1.2;
+  var chartH='<div class="cl">Kalorien letzte 7 Tage</div><div class="chart-wrap"><div class="chart">';
+  days7.forEach(function(date){
+    var it=intake(date),pct=Math.min(100,Math.round(it.tot/needs()*100));
+    var col=pct>=80?'var(--gn)':pct>=50?'var(--a)':'var(--rd)';
+    var h=Math.max(3,Math.round(pct*.74));
+    var lbl=new Date(date+'T12:00:00').toLocaleDateString('de-DE',{weekday:'short'});
+    chartH+='<div class="bar-col"><div class="bar-col-f" style="height:'+h+'px;background:'+col+';width:100%"></div><div class="bar-col-l">'+lbl+'</div></div>';
+  });
+  chartH+='</div></div>';
+  var essenHtml=Object.keys(byD).length?'<div class="c">'+chartH+'</div>'+Object.entries(byD).map(function(kv){
+    var date=kv[0],es=kv[1];
+    var it=intake(date),lbl=new Date(date+'T12:00:00').toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'});
+    return'<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><b>'+lbl+'</b><span style="font-size:11px;color:var(--mu)">'+Math.round(it.tot)+' kcal</span></div>'+es.map(eHtml).join('')+'</div>';
+  }).join(''):'<div class="emp">📭 Noch keine Daten.</div>';
+  g('hist-essen').innerHTML=essenHtml;
+
+  // ── SCHLAF ──
+  var schlafE=E.filter(function(e){return e.type==='sleep'||e.type==='wake';});
+  var byDs={};schlafE.sort(function(a,b){return(b.date+b.time).localeCompare(a.date+a.time);}).forEach(function(e){(byDs[e.date]=byDs[e.date]||[]).push(e);});
+  // Schlaf-Chart
+  var schlafChart='<div class="cl">Schlafstunden letzte 7 Tage</div><div class="chart-wrap"><div class="chart">';
+  days7.forEach(function(date){
+    var de=E.filter(function(e){return e.date===date;}).sort(function(a,b){return a.time.localeCompare(b.time);});
+    var total=0,lastSl=null;
+    de.forEach(function(e){if(e.type==='sleep')lastSl=mfs(e.time);if(e.type==='wake'&&lastSl!=null){total+=mfs(e.time)-lastSl;lastSl=null;}});
+    var hrs=total/60,h=Math.max(3,Math.round(hrs/14*74));
+    var col=hrs>=12?'var(--gn)':hrs>=8?'var(--a)':'var(--rd)';
+    var lbl=new Date(date+'T12:00:00').toLocaleDateString('de-DE',{weekday:'short'});
+    schlafChart+='<div class="bar-col"><div class="bar-col-f" style="height:'+h+'px;background:'+col+';width:100%"></div><div class="bar-col-l">'+lbl+'</div></div>';
+  });
+  schlafChart+='</div></div>';
+  var schlafHtml=Object.keys(byDs).length?'<div class="c">'+schlafChart+'</div>'+Object.entries(byDs).map(function(kv){
+    var date=kv[0],es=kv[1];
+    var lbl=new Date(date+'T12:00:00').toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'});
+    return'<div style="margin-bottom:12px"><div style="margin-bottom:4px"><b>'+lbl+'</b></div>'+es.map(eHtml).join('')+'</div>';
+  }).join(''):'<div class="emp">😴 Noch keine Schlafdaten.</div>';
+  g('hist-schlaf').innerHTML=schlafHtml;
+
+  // ── REAKTIONEN ──
+  var reaktE=E.filter(function(e){return e.type==='reaktion';}).sort(function(a,b){return(b.date+b.time).localeCompare(a.date+a.time);});
+  g('hist-reaktion').innerHTML=reaktE.length?reaktE.map(function(e){
+    var sc=e.schwere>=4?'var(--rd)':e.schwere>=2?'var(--a)':'var(--gn)';
+    return'<div class="le" style="border-color:'+sc+'"><span style="font-size:18px">⚠️</span><div class="le-b"><div class="le-t">'+(e.food||'–')+'</div><div class="le-m">'+e.reaktion+' · Schwere '+(e.schwere||1)+(e.note?' · '+e.note:'')+'</div></div><div class="le-acts"><span style="font-size:11px;color:var(--mu)">'+e.date+' '+e.time+'</span><button class="icon-btn" onclick="editE(\''+e.id+'\')">✏️</button><button class="icon-btn" onclick="delE(\''+e.id+'\')">×</button></div></div>';
+  }).join(''):'<div class="emp">✅ Noch keine Reaktionen erfasst.</div>';
+}
+
+// ── ENTRY HTML ────────────────────────────────────────────────────
 function brLbl(e){
-  if(!e.zutaten||!Object.keys(e.zutaten).length)return e.breiType||'Brei';
-  var n=Object.keys(e.zutaten).slice(0,2).map(function(k){return Z[k]?Z[k].l.split(' ')[0]:k;}).join('+');
-  return e.oelKey&&e.oelKey!=='none'?n+'+'+O[e.oelKey].l:n;
+  if(!e.zutaten||!Object.keys(e.zutaten).length)return'Brei';
+  var az=allZ();
+  return Object.keys(e.zutaten).slice(0,3).map(function(k){return az[k]?az[k].l.split(' ')[0]:k;}).join('+');
 }
 function eHtml(e){
   var m='';
   if(e.type==='feed'){var q=e.sq==='gut'?1:e.sq==='mittel'?.7:.4;m=(e.dur||10)+'min · '+(e.sq||'gut')+' · ~'+Math.round((e.dur||10)*7*0.65*q)+'ml';}
-  if(e.type==='brei')m=(e.breiG||150)+'g · '+brLbl(e)+' · ~'+eKcal(e)+'kcal';
-  if(e.type==='reaktion'){
-    var sc=e.schwere>=4?'var(--rd)':e.schwere>=2?'var(--a)':'var(--gn)';
-    m=(e.food?e.food+' · ':'')+e.reaktion+(e.schwere?' · Schwere '+e.schwere:'')+(e.note?' · '+e.note:'');
-  }
+  if(e.type==='brei')m=brLbl(e)+' · ~'+eKcal(e)+'kcal';
+  if(e.type==='wake'&&e.note)m=e.note;
   if(e.type==='sleep'&&e.onsetMins!=null)m=e.onsetMins+'min '+(e.onsetMins<=15?'✅':e.onsetMins<=30?'⚡':'⚠️');
-  return '<div class="le"><span style="font-size:15px;width:20px;text-align:center;flex-shrink:0">'+ICOS[e.type]+'</span><div class="le-b"><div class="le-t">'+LBLS[e.type]+'</div>'+(m?'<div class="le-m">'+m+'</div>':'')+
-    '</div><span style="font-size:11px;color:var(--mu);margin-right:4px">'+e.time+'</span><button class="del" onclick="delE(\''+e.id+'\')">×</button></div>';
+  if(e.type==='reaktion')m=e.reaktion+' · Schwere '+(e.schwere||1);
+  return'<div class="le"><span style="font-size:15px;width:20px;text-align:center;flex-shrink:0">'+ICOS[e.type]+'</span><div class="le-b"><div class="le-t">'+LBLS[e.type]+'</div>'+(m?'<div class="le-m">'+m+'</div>':'')+
+    '</div><div class="le-acts"><span style="font-size:11px;color:var(--mu)">'+e.time+'</span><button class="icon-btn" onclick="editE(\''+e.id+'\')">✏️</button><button class="icon-btn" onclick="delE(\''+e.id+'\')">×</button></div></div>';
 }
 
-// ── BREI UI ──────────────────────────────────────────────────────
+// ── BREI UI (schrittweise) ────────────────────────────────────────
 function breiUI(){
   var az=allZ();
   var h='';
-  // Zutaten nach Kategorie
+  // bereits ausgewählte Zutaten als Steps
+  Object.keys(selZ).forEach(function(k){
+    var kcal=Math.round((az[k]?az[k].k:0)*einheitToG(selZ[k])/100);
+    h+='<div class="brei-step"><div class="brei-step-h"><span class="brei-step-name">'+(az[k]?az[k].l:k)+'</span><span class="brei-step-kcal">~'+kcal+' kcal</span></div>';
+    h+='<div class="zw">';
+    EINHEIT_OPTS.forEach(function(u){h+='<button class="zb'+(selZ[k]===u?' on':'')+'" onclick="setEinheit(\''+k+'\',\''+u+'\')">'+u+'</button>';});
+    h+='</div><button onclick="removeZ(\''+k+'\')" style="margin-top:6px;background:none;border:none;color:var(--mu);font-size:11px;cursor:pointer">✕ Entfernen</button></div>';
+  });
+  // Toppings steps
+  Object.keys(selT).forEach(function(k){
+    var kcal=Math.round((TOPPINGS[k]?TOPPINGS[k].k:0)*einheitToG(selT[k])/100);
+    h+='<div class="brei-step" style="border-color:var(--a2)"><div class="brei-step-h"><span style="font-size:13px;font-weight:600;color:var(--a2)">'+(TOPPINGS[k]?TOPPINGS[k].l:k)+'</span><span class="brei-step-kcal">~'+kcal+' kcal</span></div>';
+    h+='<div class="zw">';
+    EINHEIT_OPTS.forEach(function(u){h+='<button class="zb'+(selT[k]===u?' oon':'')+'" onclick="setToppEinheit(\''+k+'\',\''+u+'\')">'+u+'</button>';});
+    h+='</div><button onclick="removeT(\''+k+'\')" style="margin-top:6px;background:none;border:none;color:var(--mu);font-size:11px;cursor:pointer">✕ Entfernen</button></div>';
+  });
+  // Zutaten-Auswahl nach Kategorie
   ['b','g','o','p'].forEach(function(cat){
     h+='<div class="zg"><div class="zg-l">'+CL[cat]+'</div><div class="zw">';
-    Object.keys(az).forEach(function(k){
-      if(az[k].c===cat){
-        var on=selZ[k]?'on':'';
-        h+='<button class="zb '+on+'" id="zb-'+k+'" onclick="tZ(\''+k+'\')">'+az[k].l+'</button>';
-      }
-    });
+    Object.keys(az).forEach(function(k){if(az[k].c===cat&&!selZ[k])h+='<button class="zb" onclick="addZ(\''+k+'\')">'+az[k].l+'</button>';});
     h+='</div></div>';
   });
-  // Einheit-Auswahl (erscheint wenn Zutat gewählt)
-  if(Object.keys(selZ).length){
-    h+='<div class="zg"><div class="zg-l">Menge pro Zutat</div>';
-    Object.keys(selZ).forEach(function(k){
-      h+='<div style="margin-bottom:6px"><div style="font-size:11px;color:var(--mu);margin-bottom:3px">'+az[k].l+'</div><div class="zw">';
-      EINHEIT_OPTS.forEach(function(u){
-        var on=selZ[k]===u?'on':'';
-        h+='<button class="zb '+on+'" onclick="setEinheit(\''+k+'\',\''+u+'\')">'+u+'</button>';
-      });
-      h+='</div></div>';
-    });
-    h+='</div>';
-  }
   // Toppings
   h+='<div class="zg"><div class="zg-l">Toppings</div><div class="zw">';
-  Object.keys(TOPPINGS).forEach(function(k){
-    var on=selT[k]?'on':'';
-    h+='<button class="zb '+on+'" id="zt-'+k+'" onclick="tT(\''+k+'\')">'+TOPPINGS[k].l+'</button>';
-  });
-  h+='</div>';
-  if(Object.keys(selT).length){
-    Object.keys(selT).forEach(function(k){
-      h+='<div style="margin-bottom:6px"><div style="font-size:11px;color:var(--mu);margin-bottom:3px">'+TOPPINGS[k].l+'</div><div class="zw">';
-      EINHEIT_OPTS.forEach(function(u){
-        var on=selT[k]===u?'on':'';
-        h+='<button class="zb '+on+'" onclick="setToppEinheit(\''+k+'\',\''+u+'\')">'+u+'</button>';
-      });
-      h+='</div></div>';
-    });
-  }
-  h+='</div>';
-  // Eigene Zutat hinzufügen
-  h+='<div class="zg"><div class="zg-l">Eigene Zutat hinzufügen</div>';
+  Object.keys(TOPPINGS).forEach(function(k){if(!selT[k])h+='<button class="zb" onclick="addT(\''+k+'\')">'+TOPPINGS[k].l+'</button>';});
+  h+='</div></div>';
+  // Eigene Zutat
+  h+='<div class="zg"><div class="zg-l">Eigene Zutat</div>';
   h+='<div style="display:flex;gap:6px;margin-bottom:4px"><input type="text" id="cz-name" placeholder="Name" style="flex:2;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:8px;color:var(--tx);font-size:13px;font-family:sans-serif"><input type="number" id="cz-kcal" placeholder="kcal/100g" style="flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:8px;color:var(--tx);font-size:13px;font-family:sans-serif"></div>';
   h+='<div style="display:flex;gap:6px"><select id="cz-cat" style="flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:8px;color:var(--tx);font-size:13px;font-family:sans-serif"><option value="g">Gemüse</option><option value="o">Obst</option><option value="b">Basis</option><option value="p">Protein</option></select>';
   h+='<button onclick="addCustomZ()" style="flex:1;background:var(--a);border:none;border-radius:7px;padding:8px;color:#0d1117;font-size:12px;font-weight:600;font-family:sans-serif;cursor:pointer">+ Hinzufügen</button></div></div>';
-  // Kalorienprev
-  h+='<div class="kcp" id="kcp">Zutat wählen…</div>';
+  // Kaloriensumme
+  var total=brKcal(selZ,selT);
+  if(Object.keys(selZ).length||Object.keys(selT).length)h+='<div class="kcp">Gesamt: ~'+total+' kcal</div>';
   return h;
+}
+function addZ(k){selZ[k]='1 Würfel';g('m-ex').innerHTML=breiUI();}
+function removeZ(k){delete selZ[k];g('m-ex').innerHTML=breiUI();}
+function addT(k){selT[k]='1 TL';g('m-ex').innerHTML=breiUI();}
+function removeT(k){delete selT[k];g('m-ex').innerHTML=breiUI();}
+function setEinheit(k,u){selZ[k]=u;g('m-ex').innerHTML=breiUI();}
+function setToppEinheit(k,u){selT[k]=u;g('m-ex').innerHTML=breiUI();}
+function addCustomZ(){
+  var name=g('cz-name').value.trim(),kcal=+g('cz-kcal').value,cat=g('cz-cat').value;
+  if(!name||!kcal)return;
+  var key='cz_'+name.toLowerCase().replace(/\s/g,'_');
+  customZ[key]={l:name,k:kcal,c:cat};
+  try{localStorage.setItem('mv-cz',JSON.stringify(customZ));}catch(e){}
+  g('m-ex').innerHTML=breiUI();
 }
 function reaktionUI(){
   var h='<label>Was wurde davor gegessen?</label><input type="text" id="r-food" placeholder="z.B. Ei, Linsen...">';
   h+='<label>Reaktion</label><div class="zw" style="margin-bottom:10px">';
-  REAKTIONEN.forEach(function(r){
-    var on=selReak===r?'on':'';
-    h+='<button class="zb '+on+'" onclick="setReak(\''+r+'\')">'+r+'</button>';
-  });
-  h+='</div>';
-  h+='<label>Schwere (1–5)</label><div class="br">';
-  [1,2,3,4,5].forEach(function(n){
-    var on=reaktSchwere===n?'on':'';
-    h+='<button class="tb '+on+'" onclick="setSchwere('+n+')">'+n+'</button>';
-  });
-  h+='</div>';
-  h+='<label>Notiz</label><input type="text" id="r-note" placeholder="z.B. Lippe geschwollen...">';
+  REAKTIONEN.forEach(function(r){h+='<button class="zb'+(selReak===r?' on':'')+'" onclick="setReak(\''+encodeURIComponent(r)+'\')">'+r+'</button>';});
+  h+='</div><label>Schwere (1–5)</label><div class="br">';
+  [1,2,3,4,5].forEach(function(n){h+='<button class="tb'+(reaktSchwere===n?' on':'')+'" onclick="setSchwere('+n+')">'+n+'</button>';});
+  h+='</div><label>Notiz</label><input type="text" id="r-note" placeholder="z.B. Lippe geschwollen...">';
   return h;
 }
-var selT={},selReak='Kein Auffälligkeit',reaktSchwere=1;
-function tZ(k){
-  if(selZ[k])delete selZ[k];
-  else selZ[k]='1 Würfel';
-  g('m-ex').innerHTML=breiUI();updKC();
-}
-function setEinheit(k,u){selZ[k]=u;g('m-ex').innerHTML=breiUI();updKC();}
-function tT(k){if(selT[k])delete selT[k];else selT[k]='1 TL';g('m-ex').innerHTML=breiUI();updKC();}
-function setToppEinheit(k,u){selT[k]=u;g('m-ex').innerHTML=breiUI();updKC();}
-function setReak(r){selReak=r;g('m-ex').innerHTML=reaktionUI();}
+function setReak(r){selReak=decodeURIComponent(r);g('m-ex').innerHTML=reaktionUI();}
 function setSchwere(n){reaktSchwere=n;g('m-ex').innerHTML=reaktionUI();}
-function addCustomZ(){
-  var name=g('cz-name').value.trim(),kcal=+g('cz-kcal').value,cat=g('cz-cat').value;
-  if(!name||!kcal){return;}
-  var key='cz_'+name.toLowerCase().replace(/\s/g,'_');
-  customZ[key]={l:name,k:kcal,c:cat};
-  try{localStorage.setItem('mv-cz',JSON.stringify(customZ));}catch(e){}
-  g('m-ex').innerHTML=breiUI();updKC();
-}
-function updKC(){
-  var p=g('kcp');if(!p)return;
-  var keys=Object.keys(selZ),tkeys=Object.keys(selT);
-  if(!keys.length&&!tkeys.length){p.textContent='Zutat wählen…';return;}
-  var kc=brKcal(selZ,selT,selO);
-  var az=allZ();
-  var names=keys.map(function(k){return az[k]?az[k].l.split(' ')[0]:k;}).concat(tkeys.map(function(k){return TOPPINGS[k]?TOPPINGS[k].l:k;}));
-  p.textContent=names.join('+')+'→ ~'+kc+' kcal';
-}
 
-// ── MODAL ────────────────────────────────────────────────────────
-function om(type){
-  mT=type;mSq='gut';mEsd=null;selZ={};selT={};selO='raps';brG=150;selReak='Kein Auffälligkeit';reaktSchwere=1;
-  g('m-time').value=new Date().toTimeString().slice(0,5);
+// ── MODAL ──────────────────────────────────────────────────────────
+function om(type,prefillId){
+  editId=prefillId||null;
+  mT=type;mSq='gut';mEsd=null;selZ={};selT={};selReak='Keine Auffälligkeit';reaktSchwere=1;
+  var now=new Date();
   g('m-date').value=td();
-  var C={sleep:{t:'Eingeschlafen',s:'Wie lange hat es gedauert?'},wake:{t:'Aufgewacht',s:'Uhrzeit eintragen'},feed:{t:'Stillen',s:'Dauer & Qualität'},brei:{t:'Brei',s:'Zutaten → kcal automatisch'},reaktion:{t:'⚠️ Reaktion',s:'Reaktion nach Mahlzeit dokumentieren'}};
-  g('m-tit').textContent=C[type].t;g('m-sub').textContent=C[type].s;
+  g('m-time').value=now.toTimeString().slice(0,5);
+  // prefill if editing
+  if(editId){
+    var existing=E.find(function(e){return e.id===editId;});
+    if(existing){
+      g('m-date').value=existing.date;
+      g('m-time').value=existing.time;
+      if(existing.sq)mSq=existing.sq;
+      if(existing.onsetMins!=null)mEsd=existing.onsetMins;
+      if(existing.zutaten)selZ=Object.assign({},existing.zutaten);
+      if(existing.toppings)selT=Object.assign({},existing.toppings);
+      if(existing.reaktion)selReak=existing.reaktion;
+      if(existing.schwere)reaktSchwere=existing.schwere;
+    }
+  }
+  var C={sleep:{t:'Eingeschlafen',s:'Wie lange hat es gedauert?'},wake:{t:'Aufgewacht',s:'Uhrzeit eintragen'},feed:{t:'Stillen',s:'Dauer & Qualität'},brei:{t:'Brei',s:'Zutaten → kcal automatisch'},reaktion:{t:'⚠️ Reaktion',s:'Reaktion nach Mahlzeit'}};
+  g('m-tit').textContent=(editId?'✏️ Bearbeiten: ':'')+C[type].t;
+  g('m-sub').textContent=C[type].s;
   var ex='';
-  if(type==='sleep')ex='<label>Einschlafdauer</label><div class="br"><button class="tb" id="e5" onclick="sE(5)">≤5m ✅</button><button class="tb" id="e10" onclick="sE(10)">~10m</button><button class="tb" id="e20" onclick="sE(20)">~20m ⚡</button><button class="tb" id="e40" onclick="sE(40)">~40m ⚠️</button><button class="tb" id="e60" onclick="sE(60)">>45m 🔴</button></div>';
-  if(type==='feed')ex='<label>Dauer (Min)</label><input type="number" id="m-dur" value="10" min="1" max="60"><label>Qualität</label><div class="br"><button class="tb on" id="sq-gut" onclick="sSQ(\'gut\')">😊 Gut</button><button class="tb" id="sq-mittel" onclick="sSQ(\'mittel\')">😐 Mittel</button><button class="tb" id="sq-wenig" onclick="sSQ(\'wenig\')">😴 Wenig</button></div>';
+  if(type==='sleep'){
+    ex='<label>Einschlafdauer</label><div class="br">';
+    [[5,'≤5m ✅'],[10,'~10m'],[20,'~20m ⚡'],[40,'~40m ⚠️'],[60,'>45m 🔴']].forEach(function(p){ex+='<button class="tb'+(mEsd===p[0]?' on2':'')+'" onclick="sE('+p[0]+')">'+p[1]+'</button>';});
+    ex+='</div>';
+  }
+  if(type==='feed'){
+    var prefillDur=editId&&E.find(function(e){return e.id===editId;})?(E.find(function(e){return e.id===editId;}).dur||10):10;
+    ex='<label>Dauer (Min)</label><input type="number" id="m-dur" value="'+prefillDur+'" min="1" max="60"><label>Qualität</label><div class="br">';
+    [['gut','😊 Gut'],['mittel','😐 Mittel'],['wenig','😴 Wenig']].forEach(function(p){ex+='<button class="tb'+(mSq===p[0]?' on':'')+'" onclick="sSQ(\''+p[0]+'\')">'+p[1]+'</button>';});
+    ex+='</div>';
+  }
   if(type==='brei')ex=breiUI();
   if(type==='reaktion')ex=reaktionUI();
   if(type==='wake')ex='<label>Notiz (optional)</label><input type="text" id="m-note" placeholder="z.B. Hunger">';
   g('m-ex').innerHTML=ex;
-  if(type==='brei')updKC();
   g('ovl').classList.add('open');
 }
-function sE(v){mEsd=v;[5,10,20,40,60].forEach(function(n){var b=g('e'+n);if(b)b.className='tb'+(n===v?' on2':'');});}
-function sSQ(q){mSq=q;['gut','mittel','wenig'].forEach(function(v){var b=g('sq-'+v);if(b)b.className='tb'+(v===q?' on':'');});}
-function cm(){g('ovl').classList.remove('open');mT=null;}
+function editE(id){
+  var e=E.find(function(x){return x.id===id;});
+  if(e)om(e.type,id);
+}
+function sE(v){mEsd=v;var ex=g('m-ex');if(ex){var btns=ex.querySelectorAll('.tb');btns.forEach(function(b){b.className='tb';});}}
+function sSQ(q){mSq=q;g('m-ex').innerHTML=g('m-ex').innerHTML.replace(/class="tb on"/g,'class="tb"');var b=g('sq-'+q);if(b)b.className='tb on';}
+function cm(){g('ovl').classList.remove('open');mT=null;editId=null;}
 function se(){
-  var t=g('m-time').value, d=g('m-date').value||td();if(!t)return;
-  var e={id:Date.now()+'',type:mT,date:d,time:t,ts:Date.now()};
+  var t=g('m-time').value,d=g('m-date').value||td();if(!t)return;
+  var e={id:editId||Date.now()+'',type:mT,date:d,time:t,ts:Date.now()};
   if(mT==='sleep'&&mEsd!=null)e.onsetMins=mEsd;
   if(mT==='feed'){e.dur=+(g('m-dur')?g('m-dur').value:10)||10;e.sq=mSq;}
-  if(mT==='brei'){e.breiG=150;e.zutaten=Object.assign({},selZ);e.toppings=Object.assign({},selT);e.oelKey=selO;e.breiKcal=brKcal(selZ,selT,selO);}
+  if(mT==='brei'){e.breiG=150;e.zutaten=Object.assign({},selZ);e.toppings=Object.assign({},selT);e.breiKcal=brKcal(selZ,selT);}
   if(mT==='reaktion'){var rf=g('r-food'),rn=g('r-note');e.food=rf?rf.value:'';e.reaktion=selReak;e.schwere=reaktSchwere;e.note=rn?rn.value:'';}
   if(mT==='wake'){var n=g('m-note');if(n&&n.value)e.note=n.value;}
-  E.push(e);lsSave();syncPush();cm();ra();
-  toast('✓ '+LBLS[mT]+(e.breiKcal?' ~'+e.breiKcal+'kcal':''));
+  if(editId){E=E.filter(function(x){return x.id!==editId;});}
+  E.push(e);saveAll();cm();ra();
+  toast((editId?'✏️ Aktualisiert: ':'✓ ')+LBLS[mT]);
 }
-function delE(id){E=E.filter(function(e){return e.id!==id;});lsSave();syncPush();ra();toast('Gelöscht');}
+function delE(id){if(!confirm('Eintrag löschen?'))return;E=E.filter(function(e){return e.id!==id;});saveAll();ra();toast('Gelöscht');}
 
-// ── SETTINGS ─────────────────────────────────────────────────────
+// ── SETTINGS ──────────────────────────────────────────────────────
 function iS(){
   g('s-w1').value=S.w1;g('s-w2').value=S.w2;g('s-ww1').value=S.ww1;g('s-n1').value=S.n1;
   g('s-ww2').value=S.ww2;g('s-n2').value=S.n2;g('s-eww').value=S.eww;g('s-bed').value=S.bed;
@@ -576,26 +577,26 @@ function iS(){
 }
 function sv(){
   S=Object.assign({},S,{w1:g('s-w1').value,w2:g('s-w2').value,ww1:+g('s-ww1').value||90,n1:+g('s-n1').value||110,ww2:+g('s-ww2').value||90,n2:+g('s-n2').value||40,eww:+g('s-eww').value||120,bed:g('s-bed').value,wgt:+g('s-wgt').value||8.7,schub:g('s-schub').checked,sd:g('s-sd').value});
-  lsSave();syncPush();ra();toast('Gespeichert ✓');
+  saveAll();ra();toast('Gespeichert ✓');
 }
 
-// ── MISC ─────────────────────────────────────────────────────────
+// ── MISC ──────────────────────────────────────────────────────────
 function toast(m){var t=g('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2400);}
 function gp(name,el){document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});document.querySelectorAll('.nb').forEach(function(n){n.classList.remove('on');});g('p-'+name).classList.add('on');el.classList.add('on');}
-function exportD(){var b=new Blob([JSON.stringify({E:E,S:S,v:3})],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='marie-'+td()+'.json';a.click();}
-function doReset(){if(!confirm('Alle Daten löschen?'))return;E=[];lsSave();syncPush();ra();toast('Gelöscht');}
-
-// ── INIT ─────────────────────────────────────────────────────────
-lsLoad();
-iS();ra();
-if(apiKey&&binId){setTimeout(syncPull,1000);setInterval(syncPull,30000);}
-else if(!localStorage.getItem('mv-skip')){
-  // first run
-  document.getElementById('api-key-input').value=apiKey;
-  document.getElementById('bin-id-input').value=binId;
-  showSetup();
-  document.querySelector('.skip').onclick=function(){localStorage.setItem('mv-skip','1');skipSync();};
+function exportD(){var b=new Blob([JSON.stringify({E:E,S:S,v:4})],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='marie-'+td()+'.json';a.click();}
+function doReset(){if(!confirm('Alle Daten löschen?'))return;E=[];saveAll();ra();toast('Gelöscht');}
+function importD(inp){
+  var f=inp.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(d.E){E=d.E;if(d.S)S=Object.assign({},DF,d.S);saveAll();iS();ra();toast('✅ '+E.length+' Einträge');}}catch(e){toast('❌ Fehler');}};
+  r.readAsText(f);inp.value='';
 }
+
+// ── INIT ──────────────────────────────────────────────────────────
+lsLoad();
+if(!S.sd)S.sd=new Date(Date.now()-7*24*3600*1000).toISOString().slice(0,10);
+iS();ra();
+if(apiKey&&binId){setTimeout(syncPull,800);setInterval(syncPull,30000);}
 setInterval(ra,60000);
 </script>
 </body>
