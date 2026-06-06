@@ -135,6 +135,7 @@ input[type=file]{display:none}
     <button class="qb w" onclick="om('wake')"><div style="font-size:20px">☀️</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Wacht auf</div><div style="font-size:10px;color:var(--mu)">Uhrzeit</div></button>
     <button class="qb f" onclick="om('feed')"><div style="font-size:20px">🤱</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Stillen</div><div style="font-size:10px;color:var(--mu)">Dauer & Qualität</div></button>
     <button class="qb b" onclick="om('brei')"><div style="font-size:20px">🍚</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Brei</div><div style="font-size:10px;color:var(--mu)">Zutaten & kcal</div></button>
+    <button class="qb" style="border-color:var(--rd)" onclick="om('reaktion')"><div style="font-size:20px">⚠️</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Reaktion</div><div style="font-size:10px;color:var(--mu)">Nach Mahlzeit</div></button>
   </div>
   <div class="slbl">Heute</div>
   <div id="today-log"><div class="emp">📋 Noch nichts eingetragen.</div></div>
@@ -197,11 +198,31 @@ input[type=file]{display:none}
 <script>
 'use strict';
 // ── FOOD DB ─────────────────────────────────────────────────────
-var Z={hafer:{l:'Hafer 🌾',k:370,c:'b'},hirse:{l:'Hirse 🌾',k:356,c:'b'},dinkel:{l:'Dinkel',k:337,c:'b'},reis:{l:'Reis 🍚',k:349,c:'b'},gries:{l:'Grieß',k:340,c:'b'},karotte:{l:'Karotte 🥕',k:41,c:'g'},sukar:{l:'Süßkartoffel 🍠',k:86,c:'g'},kartoffel:{l:'Kartoffel 🥔',k:77,c:'g'},kuerbis:{l:'Kürbis 🎃',k:27,c:'g'},pastinake:{l:'Pastinake',k:75,c:'g'},zucchini:{l:'Zucchini 🥒',k:17,c:'g'},brokkoli:{l:'Brokkoli 🥦',k:34,c:'g'},spinat:{l:'Spinat 🌿',k:23,c:'g'},erbsen:{l:'Erbsen 🫛',k:81,c:'g'},apfel:{l:'Apfel 🍎',k:52,c:'o'},birne:{l:'Birne 🍐',k:57,c:'o'},banane:{l:'Banane 🍌',k:89,c:'o'},mango:{l:'Mango 🥭',k:60,c:'o'},huehn:{l:'Hühnchen 🍗',k:165,c:'p'},rind:{l:'Rind 🥩',k:155,c:'p'},lachs:{l:'Lachs 🐟',k:208,c:'p'},linsen:{l:'Linsen 🫘',k:116,c:'p'}};
+var WÜRFEL_G=36; // 3.2×3.2×3.5cm ≈ 36g
+var TL_G=5; // Teelöffel ≈ 5g
+var Z={
+  // Basis
+  hafer:{l:'Hafer 🌾',k:370,c:'b'},hirse:{l:'Hirse 🌾',k:356,c:'b'},dinkel:{l:'Dinkel',k:337,c:'b'},reis:{l:'Reis 🍚',k:349,c:'b'},gries:{l:'Grieß',k:340,c:'b'},linsen:{l:'Linsen 🫘',k:116,c:'b'},
+  // Gemüse
+  karotte:{l:'Karotte 🥕',k:41,c:'g'},sukar:{l:'Süßkartoffel 🍠',k:86,c:'g'},kartoffel:{l:'Kartoffel 🥔',k:77,c:'g'},kuerbis:{l:'Kürbis 🎃',k:27,c:'g'},blumenkohl:{l:'Blumenkohl',k:25,c:'g'},fenchel:{l:'Fenchel',k:31,c:'g'},spinat:{l:'Spinat 🌿',k:23,c:'g'},zucchini:{l:'Zucchini 🥒',k:17,c:'g'},brokkoli:{l:'Brokkoli 🥦',k:34,c:'g'},erbsen:{l:'Erbsen 🫛',k:81,c:'g'},pastinake:{l:'Pastinake',k:75,c:'g'},
+  // Obst
+  beeren:{l:'Gem. Beeren 🫐',k:45,c:'o'},apfelmus:{l:'Apfelmus 🍎',k:50,c:'o'},mango:{l:'Apfelmark Mango 🥭',k:55,c:'o'},johannis:{l:'Apfelmark Joh./Him.',k:48,c:'o'},erdbeere:{l:'Erdbeere 🍓',k:32,c:'o'},banane:{l:'Banane 🍌',k:89,c:'o'},birne:{l:'Birne 🍐',k:57,c:'o'},
+  // Protein
+  huehn:{l:'Hühnchen 🍗',k:165,c:'p'},rind:{l:'Rind 🥩',k:155,c:'p'},lachs:{l:'Lachs 🐟',k:208,c:'p'},
+};
+var TOPPINGS={
+  mandelw:{l:'Mandelmus weiß',k:620},mandelbr:{l:'Mandelmus braun',k:600},erdnuss:{l:'Erdnussmus',k:588},rapsoel:{l:'Rapsöl',k:900}
+};
 var O={none:{l:'Kein Öl',k:0},raps:{l:'Rapsöl',k:900},lein:{l:'Leinöl',k:900},oliven:{l:'Olivenöl',k:900},kokos:{l:'Kokosöl',k:862},butter:{l:'Butter',k:741}};
 var CL={b:'Basis',g:'Gemüse',o:'Obst',p:'Protein'};
-var ICOS={sleep:'😴',wake:'☀️',feed:'🤱',brei:'🍚'};
-var LBLS={sleep:'Eingeschlafen',wake:'Aufgewacht',feed:'Gestillt',brei:'Brei'};
+var EINHEIT_OPTS=['Würfel','½ Würfel','2 Würfel','3 Würfel','1 TL','2 TL','3 TL'];
+var REAKTIONEN=['Kein Auffälligkeit','Leichter Ausschlag','Starker Ausschlag','Erbrechen','Quaddeln','Anaphylaxie ⚠️','Sonstiges'];
+// Custom Zutaten aus localStorage
+var customZ={};
+try{customZ=JSON.parse(localStorage.getItem('mv-cz')||'{}');}catch(e){}
+function allZ(){return Object.assign({},Z,customZ);}
+var ICOS={sleep:'😴',wake:'☀️',feed:'🤱',brei:'🍚',reaktion:'⚠️'};
+var LBLS={sleep:'Eingeschlafen',wake:'Aufgewacht',feed:'Gestillt',brei:'Brei',reaktion:'Reaktion'};
 var BIRTH=new Date('2025-09-16');
 var DF={w1:'06:00',w2:'08:00',ww1:90,n1:110,ww2:90,n2:40,eww:120,bed:'19:30',wgt:8.7,schub:true,sd:''};
 
@@ -281,10 +302,25 @@ function schF(){if(!S.schub||!S.sd)return 1;var d=Math.floor((Date.now()-new Dat
 function needs(){return Math.round(S.wgt*83*schF());}
 
 // ── CALORIES ─────────────────────────────────────────────────────
-function brKcal(z,o,gr){
-  var keys=Object.keys(z),tot=keys.length||1,k=0;
-  keys.forEach(function(key){k+=(Z[key]?Z[key].k:0)/tot*gr/100;});
-  if(o&&o!=='none'&&O[o])k+=O[o].k*(gr*0.03/100);
+function einheitToG(einheit){
+  if(einheit==='½ Würfel')return WÜRFEL_G/2;
+  if(einheit==='2 Würfel')return WÜRFEL_G*2;
+  if(einheit==='3 Würfel')return WÜRFEL_G*3;
+  if(einheit==='1 TL')return TL_G;
+  if(einheit==='2 TL')return TL_G*2;
+  if(einheit==='3 TL')return TL_G*3;
+  return WÜRFEL_G; // 1 Würfel default
+}
+function brKcal(selMap,toppings,oelKey){
+  var az=allZ(),k=0;
+  Object.keys(selMap).forEach(function(key){
+    var gr=einheitToG(selMap[key]);
+    k+=(az[key]?az[key].k:0)*gr/100;
+  });
+  Object.keys(toppings||{}).forEach(function(key){
+    var gr=einheitToG(toppings[key]);
+    k+=(TOPPINGS[key]?TOPPINGS[key].k:0)*gr/100;
+  });
   return Math.round(k);
 }
 function eKcal(e){
@@ -389,7 +425,10 @@ function eHtml(e){
   var m='';
   if(e.type==='feed'){var q=e.sq==='gut'?1:e.sq==='mittel'?.7:.4;m=(e.dur||10)+'min · '+(e.sq||'gut')+' · ~'+Math.round((e.dur||10)*7*0.65*q)+'ml';}
   if(e.type==='brei')m=(e.breiG||150)+'g · '+brLbl(e)+' · ~'+eKcal(e)+'kcal';
-  if(e.type==='wake'&&e.note)m=e.note;
+  if(e.type==='reaktion'){
+    var sc=e.schwere>=4?'var(--rd)':e.schwere>=2?'var(--a)':'var(--gn)';
+    m=(e.food?e.food+' · ':'')+e.reaktion+(e.schwere?' · Schwere '+e.schwere:'')+(e.note?' · '+e.note:'');
+  }
   if(e.type==='sleep'&&e.onsetMins!=null)m=e.onsetMins+'min '+(e.onsetMins<=15?'✅':e.onsetMins<=30?'⚡':'⚠️');
   return '<div class="le"><span style="font-size:15px;width:20px;text-align:center;flex-shrink:0">'+ICOS[e.type]+'</span><div class="le-b"><div class="le-t">'+LBLS[e.type]+'</div>'+(m?'<div class="le-m">'+m+'</div>':'')+
     '</div><span style="font-size:11px;color:var(--mu);margin-right:4px">'+e.time+'</span><button class="del" onclick="delE(\''+e.id+'\')">×</button></div>';
@@ -397,40 +436,117 @@ function eHtml(e){
 
 // ── BREI UI ──────────────────────────────────────────────────────
 function breiUI(){
+  var az=allZ();
   var h='';
+  // Zutaten nach Kategorie
   ['b','g','o','p'].forEach(function(cat){
     h+='<div class="zg"><div class="zg-l">'+CL[cat]+'</div><div class="zw">';
-    Object.keys(Z).forEach(function(k){if(Z[k].c===cat)h+='<button class="zb'+(selZ[k]?' on':'')+'" id="zb-'+k+'" onclick="tZ(\''+k+'\')">'+Z[k].l+'</button>';});
+    Object.keys(az).forEach(function(k){
+      if(az[k].c===cat){
+        var on=selZ[k]?'on':'';
+        h+='<button class="zb '+on+'" id="zb-'+k+'" onclick="tZ(\''+k+'\')">'+az[k].l+'</button>';
+      }
+    });
     h+='</div></div>';
   });
-  h+='<div class="zg"><div class="zg-l">Öl / Fett</div><div class="zw">';
-  Object.keys(O).forEach(function(k){h+='<button class="zb'+(selO===k?' oon':'')+'" id="zb-o-'+k+'" onclick="sO(\''+k+'\')">'+O[k].l+'</button>';});
-  h+='</div></div>';
-  h+='<label>Menge (g)</label><input type="number" id="m-brg" value="'+brG+'" min="30" max="400" oninput="brG=+this.value||150;updKC()">';
+  // Einheit-Auswahl (erscheint wenn Zutat gewählt)
+  if(Object.keys(selZ).length){
+    h+='<div class="zg"><div class="zg-l">Menge pro Zutat</div>';
+    Object.keys(selZ).forEach(function(k){
+      h+='<div style="margin-bottom:6px"><div style="font-size:11px;color:var(--mu);margin-bottom:3px">'+az[k].l+'</div><div class="zw">';
+      EINHEIT_OPTS.forEach(function(u){
+        var on=selZ[k]===u?'on':'';
+        h+='<button class="zb '+on+'" onclick="setEinheit(\''+k+'\',\''+u+'\')">'+u+'</button>';
+      });
+      h+='</div></div>';
+    });
+    h+='</div>';
+  }
+  // Toppings
+  h+='<div class="zg"><div class="zg-l">Toppings</div><div class="zw">';
+  Object.keys(TOPPINGS).forEach(function(k){
+    var on=selT[k]?'on':'';
+    h+='<button class="zb '+on+'" id="zt-'+k+'" onclick="tT(\''+k+'\')">'+TOPPINGS[k].l+'</button>';
+  });
+  h+='</div>';
+  if(Object.keys(selT).length){
+    Object.keys(selT).forEach(function(k){
+      h+='<div style="margin-bottom:6px"><div style="font-size:11px;color:var(--mu);margin-bottom:3px">'+TOPPINGS[k].l+'</div><div class="zw">';
+      EINHEIT_OPTS.forEach(function(u){
+        var on=selT[k]===u?'on':'';
+        h+='<button class="zb '+on+'" onclick="setToppEinheit(\''+k+'\',\''+u+'\')">'+u+'</button>';
+      });
+      h+='</div></div>';
+    });
+  }
+  h+='</div>';
+  // Eigene Zutat hinzufügen
+  h+='<div class="zg"><div class="zg-l">Eigene Zutat hinzufügen</div>';
+  h+='<div style="display:flex;gap:6px;margin-bottom:4px"><input type="text" id="cz-name" placeholder="Name" style="flex:2;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:8px;color:var(--tx);font-size:13px;font-family:sans-serif"><input type="number" id="cz-kcal" placeholder="kcal/100g" style="flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:8px;color:var(--tx);font-size:13px;font-family:sans-serif"></div>';
+  h+='<div style="display:flex;gap:6px"><select id="cz-cat" style="flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:8px;color:var(--tx);font-size:13px;font-family:sans-serif"><option value="g">Gemüse</option><option value="o">Obst</option><option value="b">Basis</option><option value="p">Protein</option></select>';
+  h+='<button onclick="addCustomZ()" style="flex:1;background:var(--a);border:none;border-radius:7px;padding:8px;color:#0d1117;font-size:12px;font-weight:600;font-family:sans-serif;cursor:pointer">+ Hinzufügen</button></div></div>';
+  // Kalorienprev
   h+='<div class="kcp" id="kcp">Zutat wählen…</div>';
   return h;
 }
-function tZ(k){if(selZ[k])delete selZ[k];else selZ[k]=1;var b=g('zb-'+k);if(b)b.className='zb'+(selZ[k]?' on':'');updKC();}
-function sO(k){selO=k;Object.keys(O).forEach(function(o){var b=g('zb-o-'+o);if(b)b.className='zb'+(o===k?' oon':'');});updKC();}
+function reaktionUI(){
+  var h='<label>Was wurde davor gegessen?</label><input type="text" id="r-food" placeholder="z.B. Ei, Linsen...">';
+  h+='<label>Reaktion</label><div class="zw" style="margin-bottom:10px">';
+  REAKTIONEN.forEach(function(r){
+    var on=selReak===r?'on':'';
+    h+='<button class="zb '+on+'" onclick="setReak(\''+r+'\')">'+r+'</button>';
+  });
+  h+='</div>';
+  h+='<label>Schwere (1–5)</label><div class="br">';
+  [1,2,3,4,5].forEach(function(n){
+    var on=reaktSchwere===n?'on':'';
+    h+='<button class="tb '+on+'" onclick="setSchwere('+n+')">'+n+'</button>';
+  });
+  h+='</div>';
+  h+='<label>Notiz</label><input type="text" id="r-note" placeholder="z.B. Lippe geschwollen...">';
+  return h;
+}
+var selT={},selReak='Kein Auffälligkeit',reaktSchwere=1;
+function tZ(k){
+  if(selZ[k])delete selZ[k];
+  else selZ[k]='1 Würfel';
+  g('m-ex').innerHTML=breiUI();updKC();
+}
+function setEinheit(k,u){selZ[k]=u;g('m-ex').innerHTML=breiUI();updKC();}
+function tT(k){if(selT[k])delete selT[k];else selT[k]='1 TL';g('m-ex').innerHTML=breiUI();updKC();}
+function setToppEinheit(k,u){selT[k]=u;g('m-ex').innerHTML=breiUI();updKC();}
+function setReak(r){selReak=r;g('m-ex').innerHTML=reaktionUI();}
+function setSchwere(n){reaktSchwere=n;g('m-ex').innerHTML=reaktionUI();}
+function addCustomZ(){
+  var name=g('cz-name').value.trim(),kcal=+g('cz-kcal').value,cat=g('cz-cat').value;
+  if(!name||!kcal){return;}
+  var key='cz_'+name.toLowerCase().replace(/\s/g,'_');
+  customZ[key]={l:name,k:kcal,c:cat};
+  try{localStorage.setItem('mv-cz',JSON.stringify(customZ));}catch(e){}
+  g('m-ex').innerHTML=breiUI();updKC();
+}
 function updKC(){
   var p=g('kcp');if(!p)return;
-  var gr=+(g('m-brg')?g('m-brg').value:150)||150;brG=gr;
-  var keys=Object.keys(selZ);
-  if(!keys.length){p.textContent='Zutat wählen…';return;}
-  p.textContent=keys.map(function(k){return Z[k]?Z[k].l.split(' ')[0]:k;}).join('+')+' · '+gr+'g → ~'+brKcal(selZ,selO,gr)+' kcal';
+  var keys=Object.keys(selZ),tkeys=Object.keys(selT);
+  if(!keys.length&&!tkeys.length){p.textContent='Zutat wählen…';return;}
+  var kc=brKcal(selZ,selT,selO);
+  var az=allZ();
+  var names=keys.map(function(k){return az[k]?az[k].l.split(' ')[0]:k;}).concat(tkeys.map(function(k){return TOPPINGS[k]?TOPPINGS[k].l:k;}));
+  p.textContent=names.join('+')+'→ ~'+kc+' kcal';
 }
 
 // ── MODAL ────────────────────────────────────────────────────────
 function om(type){
-  mT=type;mSq='gut';mEsd=null;selZ={};selO='raps';brG=150;
+  mT=type;mSq='gut';mEsd=null;selZ={};selT={};selO='raps';brG=150;selReak='Kein Auffälligkeit';reaktSchwere=1;
   g('m-time').value=new Date().toTimeString().slice(0,5);
   g('m-date').value=td();
-  var C={sleep:{t:'Eingeschlafen',s:'Wie lange hat es gedauert?'},wake:{t:'Aufgewacht',s:'Uhrzeit eintragen'},feed:{t:'Stillen',s:'Dauer & Qualität'},brei:{t:'Brei',s:'Zutaten → kcal automatisch'}};
+  var C={sleep:{t:'Eingeschlafen',s:'Wie lange hat es gedauert?'},wake:{t:'Aufgewacht',s:'Uhrzeit eintragen'},feed:{t:'Stillen',s:'Dauer & Qualität'},brei:{t:'Brei',s:'Zutaten → kcal automatisch'},reaktion:{t:'⚠️ Reaktion',s:'Reaktion nach Mahlzeit dokumentieren'}};
   g('m-tit').textContent=C[type].t;g('m-sub').textContent=C[type].s;
   var ex='';
   if(type==='sleep')ex='<label>Einschlafdauer</label><div class="br"><button class="tb" id="e5" onclick="sE(5)">≤5m ✅</button><button class="tb" id="e10" onclick="sE(10)">~10m</button><button class="tb" id="e20" onclick="sE(20)">~20m ⚡</button><button class="tb" id="e40" onclick="sE(40)">~40m ⚠️</button><button class="tb" id="e60" onclick="sE(60)">>45m 🔴</button></div>';
   if(type==='feed')ex='<label>Dauer (Min)</label><input type="number" id="m-dur" value="10" min="1" max="60"><label>Qualität</label><div class="br"><button class="tb on" id="sq-gut" onclick="sSQ(\'gut\')">😊 Gut</button><button class="tb" id="sq-mittel" onclick="sSQ(\'mittel\')">😐 Mittel</button><button class="tb" id="sq-wenig" onclick="sSQ(\'wenig\')">😴 Wenig</button></div>';
   if(type==='brei')ex=breiUI();
+  if(type==='reaktion')ex=reaktionUI();
   if(type==='wake')ex='<label>Notiz (optional)</label><input type="text" id="m-note" placeholder="z.B. Hunger">';
   g('m-ex').innerHTML=ex;
   if(type==='brei')updKC();
@@ -444,7 +560,8 @@ function se(){
   var e={id:Date.now()+'',type:mT,date:d,time:t,ts:Date.now()};
   if(mT==='sleep'&&mEsd!=null)e.onsetMins=mEsd;
   if(mT==='feed'){e.dur=+(g('m-dur')?g('m-dur').value:10)||10;e.sq=mSq;}
-  if(mT==='brei'){e.breiG=+(g('m-brg')?g('m-brg').value:150)||150;e.zutaten=Object.assign({},selZ);e.oelKey=selO;e.breiKcal=brKcal(selZ,selO,e.breiG);}
+  if(mT==='brei'){e.breiG=150;e.zutaten=Object.assign({},selZ);e.toppings=Object.assign({},selT);e.oelKey=selO;e.breiKcal=brKcal(selZ,selT,selO);}
+  if(mT==='reaktion'){var rf=g('r-food'),rn=g('r-note');e.food=rf?rf.value:'';e.reaktion=selReak;e.schwere=reaktSchwere;e.note=rn?rn.value:'';}
   if(mT==='wake'){var n=g('m-note');if(n&&n.value)e.note=n.value;}
   E.push(e);lsSave();syncPush();cm();ra();
   toast('✓ '+LBLS[mT]+(e.breiKcal?' ~'+e.breiKcal+'kcal':''));
