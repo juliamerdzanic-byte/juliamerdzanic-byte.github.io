@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Marie ✦</title>
+<style>
+:root{--bg:#0d1117;--s:#161b24;--s2:#1e2530;--bd:#2a3244;--a:#f0a04b;--a2:#7eb8f0;--a3:#b088f0;--gn:#5ecb8c;--rd:#f07070;--tx:#e8edf5;--mu:#6b7a99}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--tx);font-size:14px;min-height:100dvh;padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+.pg{display:none;padding:10px 14px}.pg.on{display:block}
+.hdr{padding:16px 14px 4px;display:flex;align-items:center;justify-content:space-between}
+.hdr h1{font-size:22px;font-weight:700}.hdr h1 em{color:var(--a);font-style:normal}
+.bdg{font-size:11px;background:var(--s2);border:1px solid var(--bd);border-radius:20px;padding:3px 10px;display:flex;align-items:center;gap:5px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--mu);flex-shrink:0;transition:background .3s}
+.dot.ok{background:var(--gn)}.dot.err{background:var(--rd)}.dot.busy{background:var(--a);animation:p .8s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+.nav{position:fixed;bottom:0;left:0;right:0;padding:5px 4px calc(5px + env(safe-area-inset-bottom,0px));background:rgba(13,17,23,.97);border-top:1px solid var(--bd);display:flex;z-index:50}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;border-radius:8px;border:none;background:transparent;color:var(--mu);font-size:10px;font-family:sans-serif;cursor:pointer}
+.nb.on{background:var(--s2);color:var(--a)}
+.c{background:var(--s);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.cl{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mu);margin-bottom:6px}
+.bar{background:var(--s2);border-radius:4px;height:7px;overflow:hidden;margin-bottom:5px}
+.bar-f{height:100%;border-radius:4px;transition:width .4s}
+.nxt{background:var(--s2);border:1px solid var(--a);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.qg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
+.qb{background:var(--s);border:1.5px solid var(--bd);border-radius:12px;padding:12px 6px;cursor:pointer;text-align:center;font-family:sans-serif}
+.qb:active{opacity:.65}
+.qb.s{border-color:var(--a2)}.qb.w{border-color:var(--gn)}.qb.f{border-color:var(--a)}.qb.b{border-color:var(--a3)}
+.le{background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.le-b{flex:1;min-width:0}.le-t{font-size:13px;font-weight:500}.le-m{font-size:11px;color:var(--mu);margin-top:1px}
+.del{background:none;border:none;color:var(--mu);font-size:16px;cursor:pointer;padding:1px 4px}
+.ovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:100;align-items:flex-end}
+.ovl.open{display:flex}
+.mdl{background:var(--s);border-radius:16px 16px 0 0;padding:16px 14px calc(22px + env(safe-area-inset-bottom,0px));width:100%;border-top:1px solid var(--bd);max-height:90dvh;overflow-y:auto}
+.mdl h2{font-size:17px;font-weight:600;margin-bottom:2px}
+.mdl p{font-size:12px;color:var(--mu);margin-bottom:12px}
+.mdl label{display:block;font-size:11px;color:var(--mu);margin-bottom:3px;margin-top:8px}
+.mdl input,.mdl select{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:11px 12px;color:var(--tx);font-size:16px;font-family:sans-serif;margin-bottom:4px;-webkit-appearance:none}
+.br{display:flex;gap:4px;margin-bottom:8px;flex-wrap:wrap}
+.tb{padding:7px 10px;background:var(--s2);border:2px solid var(--bd);border-radius:7px;color:var(--mu);font-size:10px;font-weight:600;font-family:sans-serif;cursor:pointer;text-align:center;-webkit-user-select:none}
+.tb.on{border-color:var(--a);color:var(--a);background:rgba(240,160,75,.1)}
+.tb.on2{border-color:var(--a2);color:var(--a2);background:rgba(126,184,240,.08)}
+.kcp{background:rgba(94,203,140,.1);border:1px solid rgba(94,203,140,.3);border-radius:7px;padding:8px 10px;margin:6px 0 10px;font-size:12px;color:var(--gn);font-weight:600;text-align:center}
+.save-btn{width:100%;padding:13px;background:var(--a);border:none;border-radius:10px;font-size:15px;font-weight:600;font-family:sans-serif;color:#0d1117;cursor:pointer;margin-top:8px}
+.cnl-btn{width:100%;padding:10px;background:transparent;border:1px solid var(--bd);border-radius:10px;font-size:13px;font-family:sans-serif;color:var(--mu);cursor:pointer;margin-top:5px}
+.srow{background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.srow input[type=number],.srow input[type=time],.srow input[type=date]{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:5px 7px;color:var(--tx);font-size:13px;font-family:sans-serif;width:90px;text-align:center;-webkit-appearance:none;flex-shrink:0}
+.tog{position:relative;width:40px;height:23px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.togs{position:absolute;inset:0;background:var(--bd);border-radius:12px;cursor:pointer;transition:.2s}
+.togs::after{content:'';position:absolute;left:3px;top:3px;width:17px;height:17px;border-radius:50%;background:#fff;transition:.2s}
+.tog input:checked+.togs{background:var(--a)}
+.tog input:checked+.togs::after{transform:translateX(17px)}
+.zg{margin-bottom:10px}
+.zg-l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--mu);margin-bottom:5px}
+.zw{display:flex;flex-wrap:wrap;gap:4px}
+.zb{padding:6px 10px;background:var(--s2);border:1.5px solid var(--bd);border-radius:7px;color:var(--mu);font-size:11px;font-weight:600;font-family:sans-serif;cursor:pointer;-webkit-user-select:none}
+.zb.on{border-color:var(--a3);color:var(--a3);background:rgba(176,136,240,.1)}
+.zb.oon{border-color:var(--a2);color:var(--a2);background:rgba(126,184,240,.1)}
+.toast{position:fixed;bottom:calc(72px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:500;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.slbl{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mu);margin-bottom:6px;margin-top:2px}
+.emp{text-align:center;padding:24px 10px;color:var(--mu);font-size:13px}
+.dngr{width:100%;padding:11px;background:rgba(240,112,112,.07);border:1px solid var(--rd);border-radius:10px;font-size:13px;font-family:sans-serif;color:var(--rd);cursor:pointer;margin-top:6px}
+input[type=file]{display:none}
+
+/* ── SYNC SETUP SCREEN ── */
+#setup-screen{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+#setup-screen h2{font-size:20px;margin-bottom:8px}
+#setup-screen p{font-size:13px;color:var(--mu);margin-bottom:20px;line-height:1.6}
+#setup-screen input{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px;color:var(--tx);font-size:15px;font-family:sans-serif;margin-bottom:12px;-webkit-appearance:none;text-align:center}
+#setup-screen .save-btn{font-size:14px}
+#setup-screen .skip{font-size:12px;color:var(--mu);margin-top:10px;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+
+<!-- SYNC SETUP (first run) -->
+<div id="setup-screen" style="display:none">
+  <div style="font-size:40px;margin-bottom:12px">🔄</div>
+  <h2>Sync einrichten</h2>
+  <p>Damit beide Eltern dieselben Daten sehen, braucht ihr einen gemeinsamen JSONBin-API-Key.<br><br>
+  1. Geht auf <b>jsonbin.io</b> → kostenlosen Account erstellen<br>
+  2. Unter "API Keys" einen Key kopieren<br>
+  3. Hier einfügen (einmalig auf beiden Geräten)</p>
+  <input type="text" id="api-key-input" placeholder="API Key (X-Master-Key)">
+  <input type="text" id="bin-id-input" placeholder="Bin ID (nach erstem Speichern)">
+  <button class="save-btn" onclick="setupSync()">Speichern & starten</button>
+  <div class="skip" onclick="skipSync()">Ohne Sync starten (nur lokal)</div>
+</div>
+
+<div class="hdr">
+  <h1>Marie <em>✦</em></h1>
+  <div class="bdg"><div class="dot" id="sdot"></div><span id="agebdg">–</span></div>
+</div>
+
+<div class="pg on" id="p-home">
+  <div style="height:8px"></div>
+  <div class="c">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <div class="cl" style="margin:0">Hunger-Risiko Nacht</div>
+      <b id="sc-pct" style="font-size:18px">–%</b>
+    </div>
+    <div class="bar"><div class="bar-f" id="sc-bar" style="width:0"></div></div>
+    <div id="sc-lbl" style="font-size:12px;color:var(--mu)">–</div>
+  </div>
+  <div class="nxt">
+    <div style="font-size:10px;color:var(--a);font-weight:600;text-transform:uppercase;margin-bottom:2px">Nächste Aktion</div>
+    <div style="font-size:14px;font-weight:600" id="na-m">–</div>
+    <div style="font-size:11px;color:var(--mu)" id="na-s"></div>
+  </div>
+  <div class="c">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <div class="cl" style="margin:0">Nahrungstank</div>
+      <b id="tk-pct">0%</b>
+    </div>
+    <div class="bar"><div class="bar-f" id="tk-bar" style="width:0"></div></div>
+    <div style="font-size:11px;color:var(--mu)" id="tk-lbl">–</div>
+  </div>
+  <div class="c">
+    <div class="cl">Schlaffenster</div>
+    <div id="wins" style="display:flex;gap:5px"></div>
+  </div>
+  <div class="c">
+    <div class="cl">Tipps für heute Nacht</div>
+    <div id="adv" style="font-size:12px;line-height:1.65">–</div>
+  </div>
+  <div class="slbl">Eintragen</div>
+  <div class="qg">
+    <button class="qb s" onclick="om('sleep')"><div style="font-size:20px">😴</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Schläft</div><div style="font-size:10px;color:var(--mu)">Einschlafdauer</div></button>
+    <button class="qb w" onclick="om('wake')"><div style="font-size:20px">☀️</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Wacht auf</div><div style="font-size:10px;color:var(--mu)">Uhrzeit</div></button>
+    <button class="qb f" onclick="om('feed')"><div style="font-size:20px">🤱</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Stillen</div><div style="font-size:10px;color:var(--mu)">Dauer & Qualität</div></button>
+    <button class="qb b" onclick="om('brei')"><div style="font-size:20px">🍚</div><div style="font-size:12px;font-weight:600;color:var(--tx)">Brei</div><div style="font-size:10px;color:var(--mu)">Zutaten & kcal</div></button>
+  </div>
+  <div class="slbl">Heute</div>
+  <div id="today-log"><div class="emp">📋 Noch nichts eingetragen.</div></div>
+</div>
+
+<div class="pg" id="p-hist">
+  <div style="height:8px"></div>
+  <div style="font-size:18px;font-weight:600;margin-bottom:8px">Verlauf</div>
+  <div id="hist-list"></div>
+</div>
+
+<div class="pg" id="p-sets">
+  <div style="height:8px"></div>
+  <div style="font-size:18px;font-weight:600;margin-bottom:8px">Einstellungen</div>
+  <div class="slbl">Aufwachzeiten</div>
+  <div class="srow"><div style="font-size:13px;font-weight:500">Erste Regung</div><input type="time" id="s-w1" onchange="sv()"></div>
+  <div class="srow"><div style="font-size:13px;font-weight:500">Aufgestanden</div><input type="time" id="s-w2" onchange="sv()"></div>
+  <div class="slbl" style="margin-top:8px">Schlafmuster (Min.)</div>
+  <div class="srow"><div style="font-size:13px;font-weight:500">Wachfenster 1</div><input type="number" id="s-ww1" onchange="sv()"></div>
+  <div class="srow"><div style="font-size:13px;font-weight:500">Mittagsschlaf</div><input type="number" id="s-n1" onchange="sv()"></div>
+  <div class="srow"><div style="font-size:13px;font-weight:500">Wachfenster 2</div><input type="number" id="s-ww2" onchange="sv()"></div>
+  <div class="srow"><div style="font-size:13px;font-weight:500">Nachmittag</div><input type="number" id="s-n2" onchange="sv()"></div>
+  <div class="srow"><div style="font-size:13px;font-weight:500">Abend-Wachfenster</div><input type="number" id="s-eww" onchange="sv()"></div>
+  <div class="srow"><div style="font-size:13px;font-weight:500">Ziel-Bettzeit</div><input type="time" id="s-bed" onchange="sv()"></div>
+  <div class="slbl" style="margin-top:8px">Hunger-Modell</div>
+  <div class="srow"><div style="font-size:13px;font-weight:500">Gewicht (kg)</div><input type="number" id="s-wgt" step="0.1" onchange="sv()"></div>
+  <div class="srow"><div><div style="font-size:13px;font-weight:500">Krabbelphase</div><div style="font-size:10px;color:var(--mu)">+15% Kalorien</div></div><label class="tog"><input type="checkbox" id="s-schub" onchange="sv()"><span class="togs"></span></label></div>
+  <div class="srow"><div style="font-size:13px;font-weight:500">Schub-Start</div><input type="date" id="s-sd" onchange="sv()"></div>
+  <div class="slbl" style="margin-top:8px">Sync</div>
+  <div class="srow"><div><div style="font-size:13px;font-weight:500">JSONBin API-Key</div><div style="font-size:10px;color:var(--mu)" id="sync-status">Nicht eingerichtet</div></div><button onclick="showSetup()" style="background:var(--s2);border:1px solid var(--bd);border-radius:7px;color:var(--a2);font-size:11px;font-family:sans-serif;padding:5px 10px;cursor:pointer">Einrichten</button></div>
+  <div class="slbl" style="margin-top:8px">Daten</div>
+  <button class="save-btn" style="background:var(--gn);color:#0d1117" onclick="exportD()">📤 Exportieren</button>
+  <input type="file" id="imp-f" accept=".json" onchange="importD(this)">
+  <button class="dngr" onclick="doReset()">🗑 Alle Daten löschen</button>
+</div>
+
+<!-- MODAL -->
+<div class="ovl" id="ovl">
+  <div class="mdl">
+    <h2 id="m-tit">–</h2>
+    <p id="m-sub">–</p>
+    <label>Uhrzeit</label>
+    <input type="time" id="m-time">
+    <div id="m-ex"></div>
+    <button class="save-btn" onclick="se()">Speichern ✓</button>
+    <button class="cnl-btn" onclick="cm()">Abbrechen</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<nav class="nav">
+  <button class="nb on" onclick="gp('home',this)">🏠<br>Heute</button>
+  <button class="nb" onclick="gp('hist',this)">📋<br>Verlauf</button>
+  <button class="nb" onclick="gp('sets',this)">⚙️<br>Einst.</button>
+</nav>
+
+<script>
+'use strict';
+// ── FOOD DB ─────────────────────────────────────────────────────
+var Z={hafer:{l:'Hafer 🌾',k:370,c:'b'},hirse:{l:'Hirse 🌾',k:356,c:'b'},dinkel:{l:'Dinkel',k:337,c:'b'},reis:{l:'Reis 🍚',k:349,c:'b'},gries:{l:'Grieß',k:340,c:'b'},karotte:{l:'Karotte 🥕',k:41,c:'g'},sukar:{l:'Süßkartoffel 🍠',k:86,c:'g'},kartoffel:{l:'Kartoffel 🥔',k:77,c:'g'},kuerbis:{l:'Kürbis 🎃',k:27,c:'g'},pastinake:{l:'Pastinake',k:75,c:'g'},zucchini:{l:'Zucchini 🥒',k:17,c:'g'},brokkoli:{l:'Brokkoli 🥦',k:34,c:'g'},spinat:{l:'Spinat 🌿',k:23,c:'g'},erbsen:{l:'Erbsen 🫛',k:81,c:'g'},apfel:{l:'Apfel 🍎',k:52,c:'o'},birne:{l:'Birne 🍐',k:57,c:'o'},banane:{l:'Banane 🍌',k:89,c:'o'},mango:{l:'Mango 🥭',k:60,c:'o'},huehn:{l:'Hühnchen 🍗',k:165,c:'p'},rind:{l:'Rind 🥩',k:155,c:'p'},lachs:{l:'Lachs 🐟',k:208,c:'p'},linsen:{l:'Linsen 🫘',k:116,c:'p'}};
+var O={none:{l:'Kein Öl',k:0},raps:{l:'Rapsöl',k:900},lein:{l:'Leinöl',k:900},oliven:{l:'Olivenöl',k:900},kokos:{l:'Kokosöl',k:862},butter:{l:'Butter',k:741}};
+var CL={b:'Basis',g:'Gemüse',o:'Obst',p:'Protein'};
+var ICOS={sleep:'😴',wake:'☀️',feed:'🤱',brei:'🍚'};
+var LBLS={sleep:'Eingeschlafen',wake:'Aufgewacht',feed:'Gestillt',brei:'Brei'};
+var BIRTH=new Date('2025-09-16');
+var DF={w1:'06:00',w2:'08:00',ww1:90,n1:110,ww2:90,n2:40,eww:120,bed:'19:30',wgt:8.7,schub:true,sd:''};
+
+// ── STATE ────────────────────────────────────────────────────────
+var E=[],S=Object.assign({},DF),mT=null,mSq='gut',mEsd=null,selZ={},selO='raps',brG=150;
+var apiKey='',binId='';
+
+// ── LOCAL STORAGE ────────────────────────────────────────────────
+function lsLoad(){
+  try{E=JSON.parse(localStorage.getItem('mv-e')||'[]');}catch(e){E=[];}
+  try{var s=JSON.parse(localStorage.getItem('mv-s'));if(s)S=Object.assign({},DF,s);}catch(e){}
+  apiKey=localStorage.getItem('mv-apikey')||'';
+  binId=localStorage.getItem('mv-binid')||'';
+}
+function lsSave(){
+  try{localStorage.setItem('mv-e',JSON.stringify(E));}catch(e){}
+  try{localStorage.setItem('mv-s',JSON.stringify(S));}catch(e){}
+}
+
+// ── JSONBIN SYNC ─────────────────────────────────────────────────
+function setDot(c){var d=document.getElementById('sdot');if(d)d.className='dot '+c;}
+function syncPush(){
+  if(!apiKey||!binId){setDot('');return;}
+  setDot('busy');
+  var url='https://api.jsonbin.io/v3/b/'+binId;
+  fetch(url,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':apiKey,'X-Bin-Versioning':'false'},body:JSON.stringify({E:E,S:S,ts:Date.now()})})
+    .then(function(r){return r.ok?setDot('ok'):setDot('err');})
+    .catch(function(){setDot('err');});
+}
+function syncPull(){
+  if(!apiKey||!binId)return;
+  fetch('https://api.jsonbin.io/v3/b/'+binId+'/latest',{headers:{'X-Master-Key':apiKey}})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var rec=d.record;if(!rec||!rec.E)return;
+      var lm={};E.forEach(function(e){lm[e.id]=e;});
+      var rm={};rec.E.forEach(function(e){rm[e.id]=e;});
+      var merged=Object.values(Object.assign({},lm,rm)).sort(function(a,b){return (a.date+a.time).localeCompare(b.date+b.time);});
+      E=merged;
+      if(rec.S)S=Object.assign({},DF,rec.S);
+      lsSave();iS();ra();setDot('ok');
+    }).catch(function(){setDot('err');});
+}
+function createBin(){
+  if(!apiKey)return;
+  setDot('busy');
+  fetch('https://api.jsonbin.io/v3/b',{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':apiKey,'X-Bin-Name':'marie-tracker','X-Public-Bin':'false'},body:JSON.stringify({E:E,S:S,ts:Date.now()})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      binId=d.metadata.id;
+      localStorage.setItem('mv-binid',binId);
+      document.getElementById('bin-id-input').value=binId;
+      setDot('ok');toast('Bin erstellt: '+binId);
+    }).catch(function(){setDot('err');toast('Fehler beim Erstellen');});
+}
+function setupSync(){
+  var k=document.getElementById('api-key-input').value.trim();
+  var b=document.getElementById('bin-id-input').value.trim();
+  if(!k){toast('API-Key fehlt');return;}
+  apiKey=k;localStorage.setItem('mv-apikey',k);
+  if(b){binId=b;localStorage.setItem('mv-binid',b);hideSetup();syncPull();}
+  else{createBin();hideSetup();}
+}
+function skipSync(){hideSetup();}
+function showSetup(){document.getElementById('setup-screen').style.display='flex';}
+function hideSetup(){document.getElementById('setup-screen').style.display='none';}
+
+// ── UTILS ────────────────────────────────────────────────────────
+function g(id){return document.getElementById(id);}
+function td(){return new Date().toISOString().slice(0,10);}
+function nm(){return new Date().getHours()*60+new Date().getMinutes();}
+function mfs(s){if(!s)return 0;var p=s.split(':').map(Number);return p[0]*60+p[1];}
+function sfm(m){m=((m%1440)+1440)%1440;return('0'+Math.floor(m/60)).slice(-2)+':'+('0'+(m%60)).slice(-2);}
+function aM(t,x){return sfm(mfs(t)+x);}
+function ageW(){return Math.floor((Date.now()-BIRTH.getTime())/(7*24*3600*1000));}
+function schF(){if(!S.schub||!S.sd)return 1;var d=Math.floor((Date.now()-new Date(S.sd).getTime())/(24*3600*1000));return d<0||d>42?1:d<=14?1.15:d<=28?1.1:1.05;}
+function needs(){return Math.round(S.wgt*83*schF());}
+
+// ── CALORIES ─────────────────────────────────────────────────────
+function brKcal(z,o,gr){
+  var keys=Object.keys(z),tot=keys.length||1,k=0;
+  keys.forEach(function(key){k+=(Z[key]?Z[key].k:0)/tot*gr/100;});
+  if(o&&o!=='none'&&O[o])k+=O[o].k*(gr*0.03/100);
+  return Math.round(k);
+}
+function eKcal(e){
+  if(e.type==='feed'){var q=e.sq==='gut'?1:e.sq==='mittel'?.7:.4;return(e.dur||10)*7*0.65*q;}
+  if(e.type==='brei'){if(e.zutaten&&Object.keys(e.zutaten).length)return brKcal(e.zutaten,e.oelKey,e.breiG||150);return(e.breiG||150)*0.75;}
+  return 0;
+}
+function intake(date){
+  var de=E.filter(function(e){return e.date===(date||td());});
+  var fM=0,fK=0,bG=0,bK=0;
+  de.forEach(function(e){
+    if(e.type==='feed'){var q=e.sq==='gut'?1:e.sq==='mittel'?.7:.4;fM+=e.dur||10;fK+=(e.dur||10)*7*0.65*q;}
+    if(e.type==='brei'){bG+=e.breiG||150;bK+=eKcal(e);}
+  });
+  return{fM:fM,fK:fK,bG:bG,bK:bK,tot:fK+bK};
+}
+function calcEve(date){
+  var d=date||td(),bedE=null;
+  E.forEach(function(e){if(e.date===d&&e.type==='sleep'&&mfs(e.time)>=18*60)bedE=e;});
+  var bedM=mfs(bedE?bedE.time:S.bed),ws=bedM-120;
+  var de=E.filter(function(e){return e.date===d;}).sort(function(a,b){return a.time.localeCompare(b.time);});
+  var eF=0,eB=0,lastM=null,hasAB=false;
+  de.forEach(function(e){
+    var em=mfs(e.time);
+    if(em>=ws&&em<=bedM+45){if(e.type==='feed'){var q=e.sq==='gut'?1:e.sq==='mittel'?.7:.4;eF+=(e.dur||10)*q;lastM=em;}if(e.type==='brei'){eB+=e.breiG||150;lastM=em;}}
+    if(e.type==='brei'&&em>=ws-60&&em<=bedM+45){var z=e.zutaten||{};if(z.hafer)hasAB=true;}
+  });
+  return{eF:eF,eK:eF*7*0.65+eB*0.75,hasAB:hasAB,gap:lastM!=null?bedM-lastM:999};
+}
+function score(date){
+  var n=needs(),i=intake(date),v=calcEve(date),sf=schF(),s=Math.min(1,i.tot/n)*55;
+  if(v.hasAB)s+=18;s+=Math.min(1,v.eK/(n*0.3))*17;
+  if(v.gap>90)s-=10;else if(v.gap>60)s-=5;if(v.gap===999)s-=18;s-=(sf-1)*50;
+  return Math.max(0,Math.min(100,Math.round(s)));
+}
+function calcWins(){
+  var te=E.filter(function(e){return e.date===td();}).sort(function(a,b){return a.time.localeCompare(b.time);});
+  var sl=te.filter(function(e){return e.type==='sleep';}),wk=te.filter(function(e){return e.type==='wake';});
+  var mwl=wk.filter(function(e){var m=mfs(e.time);return m>=300&&m<=600;});
+  var mwM=mfs(mwl.length?mwl[mwl.length-1].time:S.w2);
+  function fs(from,span){return sl.find(function(e){var m=mfs(e.time);return m>=from&&m<=from+span+75;});}
+  function fw(after,span){return wk.find(function(e){return mfs(e.time)>after&&mfs(e.time)<=after+span+90;});}
+  var n1s=fs(mwM,S.ww1),n1t=n1s?n1s.time:sfm(mwM+S.ww1),n1w=n1s&&fw(mfs(n1t),S.n1),n1e=n1w?n1w.time:aM(n1t,S.n1);
+  var n1eM=mfs(n1e),n2s=fs(n1eM+30,S.ww2),n2t=n2s?n2s.time:aM(n1e,S.ww2),n2w=n2s&&fw(mfs(n2t),S.n2),n2e=n2w?n2w.time:aM(n2t,S.n2);
+  var lw=wk.filter(function(e){return mfs(e.time)>=720&&mfs(e.time)<=1080;});
+  var bed=lw.length?sfm(mfs(lw[lw.length-1].time)+S.eww):aM(n2e,S.eww);
+  bed=sfm(Math.max(1110,Math.min(1290,mfs(bed))));
+  return [{l:'Mittag',s:n1t,e:n1e},{l:'Nachm.',s:n2t,e:n2e},{l:'Nacht',s:bed,e:aM(bed,25)}];
+}
+
+// ── RENDER ───────────────────────────────────────────────────────
+function ra(){
+  var w=ageW(),mo=Math.floor(w/4.33);
+  g('agebdg').textContent=mo+'M '+Math.round(w-mo*4.33)+'W';
+  var sc=score(),nd=needs(),it=intake(),ev=calcEve(),n=nm();
+  var col=sc>=65?'var(--gn)':sc>=38?'var(--a)':'var(--rd)';
+  g('sc-pct').textContent=sc+'%';g('sc-pct').style.color=col;
+  g('sc-bar').style.cssText='width:'+sc+'%;background:'+col;
+  g('sc-lbl').textContent=sc>=75?'✅ Niedrig – ruhige Nacht':sc>=55?'😐 Mittel – 1× möglich':sc>=35?'😟 Erhöht – 1–2× Hunger':'😤 Hoch – jetzt füttern!';
+  var pct=Math.min(100,Math.round(it.tot/nd*100));
+  g('tk-pct').textContent=pct+'%';
+  g('tk-bar').style.cssText='width:'+pct+'%;background:'+(pct>=80?'var(--gn)':pct>=50?'var(--a)':'var(--rd)');
+  g('tk-lbl').textContent='Stillen: '+it.fM+'min ~'+Math.round(it.fK)+'kcal · Brei: '+it.bG+'g ~'+Math.round(it.bK)+'kcal';
+  var ws=calcWins();
+  g('wins').innerHTML=ws.map(function(w){
+    var sm=mfs(w.s),em=mfs(w.e),cl=n>em+15?'past':n>=sm-12&&n<=em+15?'now':'next';
+    var st=cl==='now'?'border-left:3px solid var(--a)':cl==='next'?'border-left:3px solid var(--a2)':'opacity:.4';
+    return '<div style="flex:1;background:var(--s2);border-radius:8px;padding:8px 6px;'+st+'"><div style="font-size:9px;color:var(--mu)">'+w.l+'</div><div style="font-size:14px;font-weight:700">'+w.s+'</div><div style="font-size:10px;color:var(--mu)">–'+w.e+'</div></div>';
+  }).join('');
+  var nxt=ws.find(function(w){return mfs(w.s)>n+5;}),inW=ws.find(function(w){return n>=mfs(w.s)-12&&n<=mfs(w.e)+15;});
+  if(inW){g('na-m').textContent=inW.l+' – JETZT offen';g('na-s').textContent='Ritual beginnen!';}
+  else if(nxt){var d=mfs(nxt.s)-n;g('na-m').textContent=nxt.l+' – '+nxt.s;g('na-s').textContent='in '+(d<60?d+'min':Math.floor(d/60)+'h '+d%60+'min');}
+  else{g('na-m').textContent='Gute Nacht!';g('na-s').textContent='Alle Fenster vorbei';}
+  var tips=[];
+  if(!ev.hasAB)tips.push('🍚 Haferbrei Abend fehlt.');
+  if(ev.eF<8)tips.push('🤱 Min. 10 Min stillen vor Schlaf.');
+  if(ev.gap>75&&ev.gap<900)tips.push('⏱ Letzte Mahlzeit '+ev.gap+'min vor Bett.');
+  if(it.tot<nd*.72)tips.push('⚠️ Erst '+Math.round(it.tot)+'/'+nd+' kcal.');
+  if(sc>=70)tips.push('✅ Gut gesättigt!');
+  g('adv').innerHTML=tips.join('<br>')||'Mehr Einträge für präzise Tipps.';
+  // log
+  var today=E.filter(function(e){return e.date===td();}).sort(function(a,b){return b.time.localeCompare(a.time);});
+  g('today-log').innerHTML=today.length?today.map(eHtml).join(''):'<div class="emp">📋 Noch nichts eingetragen.</div>';
+  // hist
+  var hl=g('hist-list');
+  var byD={};E.slice().sort(function(a,b){return(b.date+b.time).localeCompare(a.date+a.time);}).forEach(function(e){if(!byD[e.date])byD[e.date]=[];byD[e.date].push(e);});
+  var keys=Object.keys(byD);
+  hl.innerHTML=keys.length?keys.map(function(date){
+    var lbl=new Date(date+'T12:00:00').toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'});
+    var hs=score(date),hcol=hs>=65?'var(--gn)':hs>=38?'var(--a)':'var(--rd)';
+    return '<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><b>'+lbl+'</b><span style="font-size:11px;color:'+hcol+';font-weight:600">Hunger: '+hs+'%</span></div>'+byD[date].map(eHtml).join('')+'</div>';
+  }).join(''):'<div class="emp">📭 Noch keine Daten.</div>';
+  // sync status
+  var ss=g('sync-status');if(ss)ss.textContent=apiKey?(binId?'Aktiv (Bin: '+binId.slice(-6)+'…)':'Kein Bin'):'Nicht eingerichtet';
+}
+function brLbl(e){
+  if(!e.zutaten||!Object.keys(e.zutaten).length)return e.breiType||'Brei';
+  var n=Object.keys(e.zutaten).slice(0,2).map(function(k){return Z[k]?Z[k].l.split(' ')[0]:k;}).join('+');
+  return e.oelKey&&e.oelKey!=='none'?n+'+'+O[e.oelKey].l:n;
+}
+function eHtml(e){
+  var m='';
+  if(e.type==='feed'){var q=e.sq==='gut'?1:e.sq==='mittel'?.7:.4;m=(e.dur||10)+'min · '+(e.sq||'gut')+' · ~'+Math.round((e.dur||10)*7*0.65*q)+'ml';}
+  if(e.type==='brei')m=(e.breiG||150)+'g · '+brLbl(e)+' · ~'+eKcal(e)+'kcal';
+  if(e.type==='wake'&&e.note)m=e.note;
+  if(e.type==='sleep'&&e.onsetMins!=null)m=e.onsetMins+'min '+(e.onsetMins<=15?'✅':e.onsetMins<=30?'⚡':'⚠️');
+  return '<div class="le"><span style="font-size:15px;width:20px;text-align:center;flex-shrink:0">'+ICOS[e.type]+'</span><div class="le-b"><div class="le-t">'+LBLS[e.type]+'</div>'+(m?'<div class="le-m">'+m+'</div>':'')+
+    '</div><span style="font-size:11px;color:var(--mu);margin-right:4px">'+e.time+'</span><button class="del" onclick="delE(\''+e.id+'\')">×</button></div>';
+}
+
+// ── BREI UI ──────────────────────────────────────────────────────
+function breiUI(){
+  var h='';
+  ['b','g','o','p'].forEach(function(cat){
+    h+='<div class="zg"><div class="zg-l">'+CL[cat]+'</div><div class="zw">';
+    Object.keys(Z).forEach(function(k){if(Z[k].c===cat)h+='<button class="zb'+(selZ[k]?' on':'')+'" id="zb-'+k+'" onclick="tZ(\''+k+'\')">'+Z[k].l+'</button>';});
+    h+='</div></div>';
+  });
+  h+='<div class="zg"><div class="zg-l">Öl / Fett</div><div class="zw">';
+  Object.keys(O).forEach(function(k){h+='<button class="zb'+(selO===k?' oon':'')+'" id="zb-o-'+k+'" onclick="sO(\''+k+'\')">'+O[k].l+'</button>';});
+  h+='</div></div>';
+  h+='<label>Menge (g)</label><input type="number" id="m-brg" value="'+brG+'" min="30" max="400" oninput="brG=+this.value||150;updKC()">';
+  h+='<div class="kcp" id="kcp">Zutat wählen…</div>';
+  return h;
+}
+function tZ(k){if(selZ[k])delete selZ[k];else selZ[k]=1;var b=g('zb-'+k);if(b)b.className='zb'+(selZ[k]?' on':'');updKC();}
+function sO(k){selO=k;Object.keys(O).forEach(function(o){var b=g('zb-o-'+o);if(b)b.className='zb'+(o===k?' oon':'');});updKC();}
+function updKC(){
+  var p=g('kcp');if(!p)return;
+  var gr=+(g('m-brg')?g('m-brg').value:150)||150;brG=gr;
+  var keys=Object.keys(selZ);
+  if(!keys.length){p.textContent='Zutat wählen…';return;}
+  p.textContent=keys.map(function(k){return Z[k]?Z[k].l.split(' ')[0]:k;}).join('+')+' · '+gr+'g → ~'+brKcal(selZ,selO,gr)+' kcal';
+}
+
+// ── MODAL ────────────────────────────────────────────────────────
+function om(type){
+  mT=type;mSq='gut';mEsd=null;selZ={};selO='raps';brG=150;
+  g('m-time').value=new Date().toTimeString().slice(0,5);
+  var C={sleep:{t:'Eingeschlafen',s:'Wie lange hat es gedauert?'},wake:{t:'Aufgewacht',s:'Uhrzeit eintragen'},feed:{t:'Stillen',s:'Dauer & Qualität'},brei:{t:'Brei',s:'Zutaten → kcal automatisch'}};
+  g('m-tit').textContent=C[type].t;g('m-sub').textContent=C[type].s;
+  var ex='';
+  if(type==='sleep')ex='<label>Einschlafdauer</label><div class="br"><button class="tb" id="e5" onclick="sE(5)">≤5m ✅</button><button class="tb" id="e10" onclick="sE(10)">~10m</button><button class="tb" id="e20" onclick="sE(20)">~20m ⚡</button><button class="tb" id="e40" onclick="sE(40)">~40m ⚠️</button><button class="tb" id="e60" onclick="sE(60)">>45m 🔴</button></div>';
+  if(type==='feed')ex='<label>Dauer (Min)</label><input type="number" id="m-dur" value="10" min="1" max="60"><label>Qualität</label><div class="br"><button class="tb on" id="sq-gut" onclick="sSQ(\'gut\')">😊 Gut</button><button class="tb" id="sq-mittel" onclick="sSQ(\'mittel\')">😐 Mittel</button><button class="tb" id="sq-wenig" onclick="sSQ(\'wenig\')">😴 Wenig</button></div>';
+  if(type==='brei')ex=breiUI();
+  if(type==='wake')ex='<label>Notiz (optional)</label><input type="text" id="m-note" placeholder="z.B. Hunger">';
+  g('m-ex').innerHTML=ex;
+  if(type==='brei')updKC();
+  g('ovl').classList.add('open');
+}
+function sE(v){mEsd=v;[5,10,20,40,60].forEach(function(n){var b=g('e'+n);if(b)b.className='tb'+(n===v?' on2':'');});}
+function sSQ(q){mSq=q;['gut','mittel','wenig'].forEach(function(v){var b=g('sq-'+v);if(b)b.className='tb'+(v===q?' on':'');});}
+function cm(){g('ovl').classList.remove('open');mT=null;}
+function se(){
+  var t=g('m-time').value;if(!t)return;
+  var e={id:Date.now()+'',type:mT,date:td(),time:t,ts:Date.now()};
+  if(mT==='sleep'&&mEsd!=null)e.onsetMins=mEsd;
+  if(mT==='feed'){e.dur=+(g('m-dur')?g('m-dur').value:10)||10;e.sq=mSq;}
+  if(mT==='brei'){e.breiG=+(g('m-brg')?g('m-brg').value:150)||150;e.zutaten=Object.assign({},selZ);e.oelKey=selO;e.breiKcal=brKcal(selZ,selO,e.breiG);}
+  if(mT==='wake'){var n=g('m-note');if(n&&n.value)e.note=n.value;}
+  E.push(e);lsSave();syncPush();cm();ra();
+  toast('✓ '+LBLS[mT]+(e.breiKcal?' ~'+e.breiKcal+'kcal':''));
+}
+function delE(id){E=E.filter(function(e){return e.id!==id;});lsSave();syncPush();ra();toast('Gelöscht');}
+
+// ── SETTINGS ─────────────────────────────────────────────────────
+function iS(){
+  g('s-w1').value=S.w1;g('s-w2').value=S.w2;g('s-ww1').value=S.ww1;g('s-n1').value=S.n1;
+  g('s-ww2').value=S.ww2;g('s-n2').value=S.n2;g('s-eww').value=S.eww;g('s-bed').value=S.bed;
+  g('s-wgt').value=S.wgt;g('s-schub').checked=S.schub;g('s-sd').value=S.sd||'';
+}
+function sv(){
+  S=Object.assign({},S,{w1:g('s-w1').value,w2:g('s-w2').value,ww1:+g('s-ww1').value||90,n1:+g('s-n1').value||110,ww2:+g('s-ww2').value||90,n2:+g('s-n2').value||40,eww:+g('s-eww').value||120,bed:g('s-bed').value,wgt:+g('s-wgt').value||8.7,schub:g('s-schub').checked,sd:g('s-sd').value});
+  lsSave();syncPush();ra();toast('Gespeichert ✓');
+}
+
+// ── MISC ─────────────────────────────────────────────────────────
+function toast(m){var t=g('toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2400);}
+function gp(name,el){document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});document.querySelectorAll('.nb').forEach(function(n){n.classList.remove('on');});g('p-'+name).classList.add('on');el.classList.add('on');}
+function exportD(){var b=new Blob([JSON.stringify({E:E,S:S,v:3})],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='marie-'+td()+'.json';a.click();}
+function doReset(){if(!confirm('Alle Daten löschen?'))return;E=[];lsSave();syncPush();ra();toast('Gelöscht');}
+
+// ── INIT ─────────────────────────────────────────────────────────
+lsLoad();
+iS();ra();
+if(apiKey&&binId){setTimeout(syncPull,1000);setInterval(syncPull,30000);}
+else if(!localStorage.getItem('mv-skip')){
+  // first run
+  document.getElementById('api-key-input').value=apiKey;
+  document.getElementById('bin-id-input').value=binId;
+  showSetup();
+  document.querySelector('.skip').onclick=function(){localStorage.setItem('mv-skip','1');skipSync();};
+}
+setInterval(ra,60000);
+</script>
+</body>
+</html>
