@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Marie Tracker v2 – vollständiger Code zum Download -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -175,6 +176,8 @@ input[type=file]{display:none}
   <div class="mdl">
     <h2 id="m-tit">–</h2>
     <p id="m-sub">–</p>
+    <label>Datum</label>
+    <input type="date" id="m-date">
     <label>Uhrzeit</label>
     <input type="time" id="m-time">
     <div id="m-ex"></div>
@@ -421,6 +424,7 @@ function updKC(){
 function om(type){
   mT=type;mSq='gut';mEsd=null;selZ={};selO='raps';brG=150;
   g('m-time').value=new Date().toTimeString().slice(0,5);
+  g('m-date').value=td();
   var C={sleep:{t:'Eingeschlafen',s:'Wie lange hat es gedauert?'},wake:{t:'Aufgewacht',s:'Uhrzeit eintragen'},feed:{t:'Stillen',s:'Dauer & Qualität'},brei:{t:'Brei',s:'Zutaten → kcal automatisch'}};
   g('m-tit').textContent=C[type].t;g('m-sub').textContent=C[type].s;
   var ex='';
@@ -436,8 +440,8 @@ function sE(v){mEsd=v;[5,10,20,40,60].forEach(function(n){var b=g('e'+n);if(b)b.
 function sSQ(q){mSq=q;['gut','mittel','wenig'].forEach(function(v){var b=g('sq-'+v);if(b)b.className='tb'+(v===q?' on':'');});}
 function cm(){g('ovl').classList.remove('open');mT=null;}
 function se(){
-  var t=g('m-time').value;if(!t)return;
-  var e={id:Date.now()+'',type:mT,date:td(),time:t,ts:Date.now()};
+  var t=g('m-time').value, d=g('m-date').value||td();if(!t)return;
+  var e={id:Date.now()+'',type:mT,date:d,time:t,ts:Date.now()};
   if(mT==='sleep'&&mEsd!=null)e.onsetMins=mEsd;
   if(mT==='feed'){e.dur=+(g('m-dur')?g('m-dur').value:10)||10;e.sq=mSq;}
   if(mT==='brei'){e.breiG=+(g('m-brg')?g('m-brg').value:150)||150;e.zutaten=Object.assign({},selZ);e.oelKey=selO;e.breiKcal=brKcal(selZ,selO,e.breiG);}
